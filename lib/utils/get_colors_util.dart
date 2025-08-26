@@ -117,22 +117,98 @@ Color getButtonColor(String? status, UpdateBookingStatusProvider provider) {
     case 'PENDING_APPROVAL':
       return const Color.fromARGB(255, 13, 71, 161);
     case 'ALLOCATED':
-      return Colors.orange; // Resource allocated
+      return Colors.orange;
     case 'APPROVED':
-      return Colors.green; // Already approved
+      return Colors.green;
     case 'REJECTED':
-      return Colors.red; // Rejected
+      return Colors.red;
     case 'COMPLETED':
-      return Colors.purple; // Completed
+      return Colors.purple;
     case 'CANCELLED':
-      return Colors.redAccent; // Cancelled
+      return Colors.redAccent;
     case 'KYC_PENDING':
-      return Colors.amber; // KYC pending - attention needed
+      return Colors.amber;
     case 'KYC_VERIFIED':
-      return Colors.lightGreen; // KYC verified
+      return Colors.lightGreen;
     case 'PENDING_APPROVAL (Discount_Exceeded)':
-      return Colors.deepOrange; // Special case needing attention
+      return Colors.deepOrange;
     default:
-      return Colors.grey; // Unknown state
+      return Colors.grey;
+  }
+}
+
+Color getContainerLabel(String? status) {
+  switch (status) {
+    case 'PENDING_APPROVAL':
+      return Colors.amber;
+    case 'ALLOCATED':
+      return Colors.orange;
+    case 'APPROVED':
+      return Colors.green;
+    case 'REJECTED':
+      return Colors.red;
+    case 'COMPLETED':
+      return Colors.purple;
+    case 'CANCELLED':
+      return Colors.redAccent;
+    case 'KYC_PENDING':
+      return Colors.amber;
+    case 'KYC_VERIFIED':
+      return Colors.lightGreen;
+    case 'PENDING_APPROVAL (Discount_Exceeded)':
+      return Colors.deepOrange;
+    default:
+      return Colors.black;
+  }
+}
+
+Color getContainerColor(String? status) {
+  switch (status) {
+    case 'PENDING_APPROVAL':
+      return Colors.amber.shade100;
+    case 'ALLOCATED':
+      return Colors.orange.shade100;
+    case 'APPROVED':
+      return Colors.green.shade100;
+    case 'REJECTED':
+      return Colors.red.shade100;
+    case 'COMPLETED':
+      return Colors.purple.shade100;
+    case 'CANCELLED':
+      return Colors.redAccent.shade100;
+    case 'KYC_PENDING':
+      return Colors.amber.shade100;
+    case 'KYC_VERIFIED':
+      return Colors.lightGreen.shade100;
+    case 'PENDING_APPROVAL (Discount_Exceeded)':
+      return Colors.deepOrange.shade100;
+    default:
+      return Colors.grey;
+  }
+}
+
+String getContainerLabelText(String? status) {
+  // print(status);
+  switch (status) {
+    case 'PENDING_APPROVAL':
+      return 'PENDING_APPROVAL';
+    case 'ALLOCATED':
+      return 'ALLOCATED';
+    case 'APPROVED':
+      return 'APPROVED';
+    case 'REJECTED':
+      return 'REJECTED';
+    case 'COMPLETED':
+      return 'COMPLETED';
+    case 'CANCELLED':
+      return 'CANCELLED';
+    case 'KYC_PENDING':
+      return 'KYC PENDING';
+    case 'KYC_VERIFIED':
+      return 'KYC VERIFIED';
+    case 'PENDING_APPROVAL (Discount_Exceeded)':
+      return 'APPROVE BOOKING (Discount Exceeded)';
+    default:
+      return status ?? 'UNKNOWN STATUS';
   }
 }

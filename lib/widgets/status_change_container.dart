@@ -9,14 +9,14 @@ class StatusChangeContainer extends StatelessWidget {
   });
 
   final String? label;
-  final Status? status1;
+  final String? status1;
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: status1 == Status.PENDING
+        color: status1 == "PENDING"
             ? Colors.yellow[50]
-            : status1 == Status.APPROVED
+            : status1 == "APPROVED"
             ? Colors.green[100]
             : Colors.red[100],
         borderRadius: AppBorderRadius.r1,
@@ -27,9 +27,9 @@ class StatusChangeContainer extends StatelessWidget {
           child: Text(
             label ?? "",
             style: TextStyle(
-              color: status1 == Status.PENDING
+              color: status1 == "PENDING"
                   ? Colors.amber
-                  : status1 == Status.APPROVED
+                  : status1 == "APPROVED"
                   ? Colors.green
                   : Colors.red,
               fontWeight: FontWeight.w600,

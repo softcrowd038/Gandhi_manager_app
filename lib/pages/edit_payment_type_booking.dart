@@ -67,17 +67,17 @@ class _PaymentTypeBookingState extends State<PaymentTypeBooking> {
         return false;
       }
     }
-    // if (selectedPaymentType == "Finance") {
-    //   if (selectedGCApplicable == null || selectedGCApplicable!.isEmpty) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(
-    //         content: Text('Please select Gc is applicable or not'),
-    //         backgroundColor: AppColors.error,
-    //       ),
-    //     );
-    //     return false;
-    //   }
-    // }
+    if (selectedPaymentType == "Finance") {
+      if (selectedGCApplicable == null || selectedGCApplicable!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select Gc is applicable or not'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return false;
+      }
+    }
     if (!formKey.currentState!.validate()) {
       return false;
     }
@@ -198,9 +198,56 @@ class _PaymentTypeBookingState extends State<PaymentTypeBooking> {
                   },
                   keyboardType: TextInputType.text,
                 ),
-
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: EdgeInsets.all(SizeConfig.screenHeight * 0.01),
+                  child: CustomDropDownWithLeadingIcon(
+                    entries: [
+                      {"label": "Yes", "value": "Yes"},
+                      {"label": "No", "value": "No"},
+                    ],
+                    label: 'GC Applicable',
+                    dropDownEditingController: gcApplicableController,
+                    selectedCustomerType: ValueNotifier<String?>(
+                      selectedGCApplicable,
+                    ),
+                    hintText: "Select GC Applicable",
+                    icon: FontAwesomeIcons.sackDollar,
+                    onSelected: (String? value) {
+                      setState(() {
+                        selectedGCApplicable = value;
+                      });
+                      bookingFormProvider.setGcApplicable(
+                        value == "Yes" ? true : false,
+                      );
+                      gcApplicableController.text = value ?? '';
+                    },
+                  ),
+                ),
+                if (selectedGCApplicable == "Yes")
+                  CustomTextFieldOutlined(
+                    label: "GC Applicable Amount",
+                    hintText: "0",
+                    suffixIcon: Icons.electric_bike,
+                    suffixIconColor: Colors.grey,
+                    onChanged: (value) {
+                      bookingFormProvider.setGcAmount(int.tryParse(value) ?? 0);
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter GC applicable amount';
+                      }
+                      if (int.tryParse(value) == null) {
+                        return 'Please enter valid amount';
+                      }
+                      return null;
+                    },
+                    obscureText: false,
+                    keyboardType: TextInputType.number,
+                    controller: gcAmountController,
+                  ),
               ],
+              const SizedBox(height: 24),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use, unrelated_type_equality_checks
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
+import 'package:gandhi_tvs/widgets/booking_status_container.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -26,14 +27,14 @@ class AllBookingsPage extends HookWidget {
 
     useEffect(() {
       final bookings =
-          allBookingsProvider.allBookingsModel?.data?.bookings ?? [];
+          allBookingsProvider.allBookingsModel?.data.bookings ?? [];
       filteredBookings.value = bookings;
       return null;
-    }, [allBookingsProvider.allBookingsModel?.data?.bookings]);
+    }, [allBookingsProvider.allBookingsModel?.data.bookings]);
 
     void filterBookings(String query) {
       final allBookings =
-          allBookingsProvider.allBookingsModel?.data?.bookings ?? [];
+          allBookingsProvider.allBookingsModel?.data.bookings ?? [];
 
       if (query.isEmpty) {
         filteredBookings.value = allBookings;
@@ -41,7 +42,7 @@ class AllBookingsPage extends HookWidget {
         filteredBookings.value = allBookings
             .where(
               (booking) =>
-                  booking.customerDetails?.name?.toLowerCase().contains(
+                  booking.customerDetails.name?.toLowerCase().contains(
                     query.toLowerCase(),
                   ) ??
                   false,
@@ -80,6 +81,8 @@ class AllBookingsPage extends HookWidget {
                     itemBuilder: (context, index) {
                       final booking = filteredBookings.value[index];
 
+                      print(booking.status);
+
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -97,7 +100,7 @@ class AllBookingsPage extends HookWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                booking.model?.modelName?.name ?? "",
+                                booking.model.modelName,
                                 style: TextStyle(fontSize: AppFontSize.s16),
                               ),
                               LableWithIcon(
@@ -124,21 +127,23 @@ class AllBookingsPage extends HookWidget {
                                   Expanded(
                                     child: StatusChangeContainer(
                                       label: "Kyc",
-                                      status1:
-                                          booking.documentStatus?.kyc?.status,
+                                      status1: booking.kycStatus.toString(),
                                     ),
                                   ),
                                   SizedBox(width: AppDimensions.width5),
                                   Expanded(
                                     child: StatusChangeContainer(
                                       label: "FL",
-                                      status1: booking
-                                          .documentStatus
-                                          ?.financeLetter
-                                          ?.status,
+                                      status1: booking.financeLetterStatus
+                                          .toString(),
                                     ),
                                   ),
                                 ],
+                              ),
+                              SizedBox(height: AppDimensions.height1),
+                              BookingStatusContainer(
+                                label: booking.status.toString(),
+                                status1: booking.status.toString(),
                               ),
                             ],
                           ),
@@ -146,9 +151,8 @@ class AllBookingsPage extends HookWidget {
                           trailing: CustomPopUpMenuButton(
                             booking: booking,
                             financeLetterProvider: financeLetterProvider,
-                            status1:
-                                booking.documentStatus?.financeLetter?.status,
-                            status2: booking.documentStatus?.kyc?.status,
+                            status1: booking.financeLetterStatus.toString(),
+                            status2: booking.kycStatus.toString(),
                           ),
                         ),
                       );

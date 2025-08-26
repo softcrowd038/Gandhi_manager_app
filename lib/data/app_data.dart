@@ -1,8 +1,8 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 
-final String baseUrl = "http://192.168.1.2:5002/api/v1/";
+final String baseUrl = "https://dealership.gandhitvs.in/api/v1/";
 
-final String baseImageUrl = "http://192.168.1.2:5002/api/v1";
+final String baseImageUrl = "https://dealership.gandhitvs.in/api/v1";
 
 final String whatsAppBaseUrl = 'https://waapi.happysms.in';
 

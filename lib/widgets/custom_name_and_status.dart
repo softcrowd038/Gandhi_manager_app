@@ -9,7 +9,7 @@ class CustomNameAndStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      "${booking.customerDetails?.salutation} ${booking.customerDetails?.name}",
+      "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
       style: TextStyle(
         fontWeight: AppFontWeight.w600,
         fontSize: AppFontSize.s18,

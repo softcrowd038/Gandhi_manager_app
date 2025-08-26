@@ -12,16 +12,16 @@ class CustomPopUpMenuButton extends StatelessWidget {
 
   final Booking booking;
   final FinanceLetterProvider financeLetterProvider;
-  final Status? status1;
-  final Status? status2;
+  final String? status1;
+  final String? status2;
 
   String _getFinanceLetterLabel() {
     switch (status1) {
-      case Status.PENDING:
+      case "PENDING":
         return "Uploaded Finance Letter";
-      case Status.APPROVED:
+      case "APPROVED":
         return "Approved Finance Letter";
-      case Status.NOT_UPLOADED:
+      case "NOT_UPLOADED":
       default:
         return "Add Finance Letter";
     }
@@ -29,20 +29,20 @@ class CustomPopUpMenuButton extends StatelessWidget {
 
   String _getKycLabel() {
     switch (status2) {
-      case Status.PENDING:
+      case "PENDING":
         return "Uploaded KYC";
-      case Status.APPROVED:
+      case "APPROVED":
         return "Approved KYC";
-      case Status.NOT_UPLOADED:
+      case "NOT_UPLOADED":
       default:
         return "Add KYC Details";
     }
   }
 
   bool _isFinanceLetterEnabled() =>
-      status1 == Status.NOT_UPLOADED || status1 == null;
+      status1 == "NOT_UPLOADED" || status1 == null;
 
-  bool _isKycEnabled() => status2 == Status.NOT_UPLOADED || status2 == null;
+  bool _isKycEnabled() => status2 == "NOT_UPLOADED" || status2 == null;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class CustomPopUpMenuButton extends StatelessWidget {
           showFinanceLetterDialog(
             context: context,
             customerName:
-                "${booking.customerDetails?.salutation} ${booking.customerDetails?.name}",
+                "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
             financeLetterProvider: financeLetterProvider,
             bookingId: booking.bookingId,
           );
@@ -63,10 +63,10 @@ class CustomPopUpMenuButton extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => CustomerKyc(
-                address: booking.customerDetails?.address ?? "",
+                address: booking.customerDetails.address ?? "",
                 bookingId: booking.bookingId ?? "",
                 customerName:
-                    "${booking.customerDetails?.salutation} ${booking.customerDetails?.name}",
+                    "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
               ),
             ),
           );

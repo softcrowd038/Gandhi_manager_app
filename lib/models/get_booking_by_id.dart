@@ -39,6 +39,7 @@ class Data {
   String? rto;
   String? rtoStatus;
   bool? hpa;
+  int? rtoAmount;
   int? hypothecationCharges;
   String? kycStatus;
   String? financeLetterStatus;
@@ -94,6 +95,7 @@ class Data {
     this.gstin,
     this.rto,
     this.rtoStatus,
+    this.rtoAmount,
     this.hpa,
     this.hypothecationCharges,
     this.kycStatus,
@@ -153,6 +155,7 @@ class Data {
     gstin: json["gstin"] as String?,
     rto: json["rto"] as String?,
     rtoStatus: json["rtoStatus"] as String?,
+    rtoAmount: json["rtoAmount"],
     hpa: json["hpa"] as bool?,
     hypothecationCharges: (json["hypothecationCharges"] as num?)?.tryToInt(),
     kycStatus: json["kycStatus"] as String?,
@@ -242,6 +245,7 @@ class Data {
     "gstin": gstin,
     "rto": rto,
     "rtoStatus": rtoStatus,
+    "rtoAmount": rtoAmount,
     "hpa": hpa,
     "hypothecationCharges": hypothecationCharges,
     "kycStatus": kycStatus,

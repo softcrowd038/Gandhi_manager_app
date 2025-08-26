@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:gandhi_tvs/pages/edit_select_booking_model_page.dart';
 import 'package:gandhi_tvs/provider/update_booking_status.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +44,19 @@ class GetBookingByIdPage extends HookWidget {
               return Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditSelectBookingModelPage(
+                            bookingId: bookingProvider.bookings?.data?.id,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   booking?.status != "'PENDING_APPROVAL (Discount_Exceeded)'" &&
                           formPath.isNotEmpty
                       ? IconButton(
@@ -862,7 +876,8 @@ class GetBookingByIdPage extends HookWidget {
                                           ),
                                         ),
                                         Text(
-                                          '${booking.rto.toString()} ₹',
+                                          '${booking.rtoAmount.toString()} ₹' ??
+                                              "0",
                                           style: TextStyle(
                                             fontWeight: AppFontWeight.bold,
                                           ),
@@ -876,30 +891,40 @@ class GetBookingByIdPage extends HookWidget {
                         ],
                       ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Consumer<UpdateBookingStatusProvider>(
-                        builder: (context, statusProvider, _) {
-                          return GestureDetector(
-                            onTap: () => statusProvider.updateBookingStatus(
-                              context,
-                              booking.id ?? "",
-                            ),
-                            child: TheWidthFullButton(
-                              lable: getButtonLabel(
-                                booking.status,
-                                statusProvider,
-                              ),
-                              color: getButtonColor(
-                                booking.status,
-                                statusProvider,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    Consumer<UserDetailsProvider>(
+                      builder: (context, user, _) {
+                        return user.userDetails?.data?.roles.any(
+                                  (role) => role.name == "MANAGER",
+                                ) ??
+                                true
+                            ? Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: Consumer<UpdateBookingStatusProvider>(
+                                  builder: (context, statusProvider, _) {
+                                    return GestureDetector(
+                                      onTap: () =>
+                                          statusProvider.updateBookingStatus(
+                                            context,
+                                            booking.id ?? "",
+                                          ),
+                                      child: TheWidthFullButton(
+                                        lable: getButtonLabel(
+                                          booking.status,
+                                          statusProvider,
+                                        ),
+                                        color: getButtonColor(
+                                          booking.status,
+                                          statusProvider,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : SizedBox.shrink();
+                      },
                     ),
                   ],
                 );
