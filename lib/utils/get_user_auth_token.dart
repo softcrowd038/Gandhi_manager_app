@@ -15,6 +15,7 @@ Future<void> removeAuthToken(BuildContext context) async {
   await prefs.remove('role');
   await prefs.remove('role_name');
   await prefs.remove('role_id');
+  await prefs.remove('branch');
 
   Navigator.pushReplacement(
     context,

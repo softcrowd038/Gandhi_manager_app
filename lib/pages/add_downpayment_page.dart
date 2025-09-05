@@ -25,8 +25,9 @@ class AddDownpaymentPage extends HookWidget {
     final formErrors = useState<Map<String, String?>>({});
 
     void calculateDownpayment() {
-      final dealAmount = int.tryParse(dealAmountController.text) ?? 0;
-      final financeAmt = int.tryParse(financeDisbursmentController.text) ?? 0;
+      final dealAmount = double.tryParse(dealAmountController.text) ?? 0;
+      final financeAmt =
+          double.tryParse(financeDisbursmentController.text) ?? 0;
 
       final downpayment = dealAmount - financeAmt;
       downpaymentController.text = downpayment.toString();
@@ -40,7 +41,7 @@ class AddDownpaymentPage extends HookWidget {
       if (value == null || value.isEmpty) {
         return '$fieldName is required';
       }
-      if (int.tryParse(value) == null) {
+      if (double.tryParse(value) == null) {
         return 'Please enter a valid number';
       }
       return null;
@@ -82,8 +83,8 @@ class AddDownpaymentPage extends HookWidget {
       try {
         DownpaymentModel downpaymentModel = DownpaymentModel(
           bookingId: booking.id ?? "",
-          disbursementAmount: int.parse(financeDisbursmentController.text),
-          downPaymentExpected: int.parse(downpaymentController.text),
+          disbursementAmount: double.parse(financeDisbursmentController.text),
+          downPaymentExpected: double.parse(downpaymentController.text),
           isDeviation: isConfirmed.value,
         );
 
@@ -97,7 +98,8 @@ class AddDownpaymentPage extends HookWidget {
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        dealAmountController.text = booking.discountedAmount?.toString() ?? "0";
+        dealAmountController.text = (booking.discountedAmount?.toDouble() ?? 0)
+            .toString();
         downPaymentProvider.setBookingId(booking.id ?? "");
       });
 
@@ -179,7 +181,7 @@ class AddDownpaymentPage extends HookWidget {
                         obscureText: false,
                         keyboardType: TextInputType.number,
                         onChanged: (value) {
-                          final amount = int.tryParse(value) ?? 0;
+                          final amount = double.tryParse(value) ?? 0;
                           downPaymentProvider.setDisbursementAmount(amount);
                         },
                       ),

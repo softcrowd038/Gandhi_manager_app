@@ -6,14 +6,14 @@ import 'package:gandhi_tvs/services/add_downpayment_service.dart';
 
 class DownpaymentProvider with ChangeNotifier {
   String _bookingId = "";
-  int _disbursementAmount = 0;
-  int _downPaymentExpected = 0;
+  double _disbursementAmount = 0;
+  double _downPaymentExpected = 0;
   bool _isDeviation = false;
 
   // Getters
   String get bookingId => _bookingId;
-  int get disbursementAmount => _disbursementAmount;
-  int get downPaymentExpected => _downPaymentExpected;
+  double get disbursementAmount => _disbursementAmount;
+  double get downPaymentExpected => _downPaymentExpected;
   bool get isDeviation => _isDeviation;
 
   // Setters
@@ -22,12 +22,12 @@ class DownpaymentProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setDisbursementAmount(int value) {
+  void setDisbursementAmount(double value) {
     _disbursementAmount = value;
     notifyListeners();
   }
 
-  void setDownPaymentExpected(int value) {
+  void setDownPaymentExpected(double value) {
     _downPaymentExpected = value;
     notifyListeners();
   }
