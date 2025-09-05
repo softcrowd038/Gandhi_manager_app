@@ -9,6 +9,7 @@ class DiscountPageBooking extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final discountController = useTextEditingController();
+    final noteController = useTextEditingController();
     BookingFormProvider bookingFormProvider = Provider.of<BookingFormProvider>(
       context,
       listen: false,
@@ -81,6 +82,24 @@ class DiscountPageBooking extends HookWidget {
                       },
                       obscureText: false,
                       keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  Padding(
+                    padding: AppPadding.p2,
+                    child: OutlinedBorderTextfieldWidget(
+                      label: "Note",
+                      hintText: "Add note here",
+                      suffixIcon: Icons.note,
+                      suffixIconColor: Colors.grey,
+                      controller: noteController,
+                      onChanged: (value) {
+                        bookingFormProvider.setNote(noteController.text);
+                      },
+                      validator: (value) {
+                        return;
+                      },
+                      obscureText: false,
+                      keyboardType: TextInputType.text,
                     ),
                   ),
                   Padding(
@@ -190,6 +209,7 @@ class DiscountPageBooking extends HookWidget {
                   otp: bookingFormProvider.bookingFormModel.otp,
                   salesExecutive:
                       bookingFormProvider.bookingFormModel.salesExecutive,
+                  note: bookingFormProvider.bookingFormModel.note,
                 );
 
                 if (globalKey.currentState!.validate()) {

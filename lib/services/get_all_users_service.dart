@@ -27,6 +27,7 @@ class GetAllUsersService {
       final result = await dio.get('users');
 
       if (result.statusCode == 200 || result.statusCode == 201) {
+        print(result.data);
         return AllUsersModel.fromJson(result.data);
       } else {
         ScaffoldMessenger.of(
@@ -34,7 +35,25 @@ class GetAllUsersService {
         ).showSnackBar(SnackBar(content: Text('${result.statusMessage}')));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      String? errorMessage = "Something went wrong";
+      if (e is DioException) {
+        if (e.response != null || e.response?.data != null) {
+          errorMessage = e.response?.data['message'] ?? errorMessage;
+        } else {
+          errorMessage = e.message ?? "";
+        }
+      } else {
+        errorMessage = e.toString();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(errorMessage ?? ""),
+        ),
+      );
+
+      return null;
     }
     return null;
   }

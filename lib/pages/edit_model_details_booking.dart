@@ -1,6 +1,8 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'package:gandhi_tvs/common/app_imports.dart';
+import 'package:gandhi_tvs/models/get_booking_by_id.dart';
+import 'package:gandhi_tvs/pages/edit_customer_details_booking_page.dart';
 import 'package:gandhi_tvs/provider/get_all_users_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -92,6 +94,8 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
         widget.bookingId ?? "",
       );
 
+      print(getBookingByIdProvider.bookings?.data?.color?.id);
+
       if (getBookingByIdProvider.bookings?.data != null) {
         final bookingData = getBookingByIdProvider.bookings!.data!;
         final bookingFormProvider = Provider.of<BookingFormProvider>(
@@ -124,7 +128,7 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
           bookingData.salesExecutive?.id ?? "",
         );
 
-        _setSelectedAccessories(bookingData.accessories ?? []);
+        _setSelectedAccessories(bookingData.accessories);
 
         setState(() {
           _isInitialDataLoaded = true;
@@ -145,30 +149,55 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
     }
   }
 
-  void _setSelectedAccessories(List<dynamic> accessories) {
+  void _setSelectedAccessories(List<AccessoryElement> accessories) {
     _selectedAccessoryIds = accessories
-        .map((accessory) {
-          return accessory['id']?.toString() ??
-              accessory['headerId']?.toString() ??
-              '';
-        })
+        .map((accessory) => accessory.accessory?.accessoryId ?? '')
         .where((id) => id.isNotEmpty)
         .toList();
 
-    // Also update the BookingFormProvider
     final bookingFormProvider = Provider.of<BookingFormProvider>(
       context,
       listen: false,
     );
 
-    // Assuming your BookingFormProvider has a method to set accessories
-    // If not, you'll need to add it
     bookingFormProvider.setAccessories(_selectedAccessoryIds);
+
+    // Also update the boolean selection list
+    final modelHeadersProvider = Provider.of<ModelHeadersProvider>(
+      context,
+      listen: false,
+    );
+    final prices = modelHeadersProvider.modelHeaders?.data?.model.prices ?? [];
+
+    setState(() {
+      selectedAccessories = List<bool>.generate(
+        prices.length,
+        (index) => _selectedAccessoryIds.contains(prices[index].headerId ?? ''),
+      );
+    });
 
     print('Selected accessory IDs: $_selectedAccessoryIds');
   }
 
-  // Helper method to check if an accessory is selected
+  // 2. Create a method to handle accessory selection/deselection
+  void _toggleAccessorySelection(String accessoryId, int index) {
+    setState(() {
+      if (_selectedAccessoryIds.contains(accessoryId)) {
+        _selectedAccessoryIds.remove(accessoryId);
+        selectedAccessories[index] = false;
+      } else {
+        _selectedAccessoryIds.add(accessoryId);
+        selectedAccessories[index] = true;
+      }
+    });
+
+    final bookingFormProvider = Provider.of<BookingFormProvider>(
+      context,
+      listen: false,
+    );
+    bookingFormProvider.setAccessories(_selectedAccessoryIds);
+  }
+
   bool _isAccessorySelected(String accessoryId) {
     return _selectedAccessoryIds.contains(accessoryId);
   }
@@ -236,12 +265,10 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
       ),
       body: Consumer2<UserDetailsProvider, GetBookingsByIdProvider>(
         builder: (context, user, bookingByIdProvider, _) {
-          // Show loading state
           if (_isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Show error state
           if (widget.bookingId != null &&
               bookingByIdProvider.errorMessage != null) {
             return Center(
@@ -493,14 +520,20 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
                           itemCount: prices.length,
                           itemBuilder: (BuildContext context, int index) {
                             final accessory = prices[index];
-                            final isSelected = _isAccessorySelected(
-                              accessory.headerId ?? '',
-                            );
+                            final accessoryId = accessory.headerId ?? '';
+                            _selectedAccessoryIds.contains(accessoryId);
 
-                            return ItemSelectionContainer(
-                              accessory: accessory.headerKey ?? '',
-                              isMandatory: accessory.isMandatory ?? false,
-                              accessoryId: accessory.headerId ?? '',
+                            return GestureDetector(
+                              onTap: () {
+                                if (!(accessory.isMandatory ?? false)) {
+                                  _toggleAccessorySelection(accessoryId, index);
+                                }
+                              },
+                              child: ItemSelectionContainer(
+                                accessory: accessory.headerKey ?? '',
+                                isMandatory: accessory.isMandatory ?? false,
+                                accessoryId: accessoryId,
+                              ),
                             );
                           },
                         );
@@ -519,7 +552,8 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CustomerDetailsBookingPage(),
+                builder: (context) =>
+                    EditCustomerDetailsBookingPage(bookingId: widget.bookingId),
               ),
             );
           }

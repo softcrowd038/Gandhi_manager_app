@@ -11,24 +11,28 @@ class AccessoriesModel {
   int? results;
   Data? data;
 
-  AccessoriesModel({
-    required this.status,
-    required this.results,
-    required this.data,
-  });
+  AccessoriesModel({this.status, this.results, this.data});
 
-  factory AccessoriesModel.fromJson(Map<String?, dynamic>? json) =>
+  factory AccessoriesModel.fromJson(Map<String, dynamic> json) =>
       AccessoriesModel(
-        status: json?["status"],
-        results: json?["results"],
-        data: Data.fromJson(json?["data"]),
+        status: json["status"]?.toString(),
+        results: _parseInt(json["results"]),
+        data: json["data"] != null ? Data.fromJson(json["data"]) : null,
       );
 
-  Map<String?, dynamic>? toJson() => {
+  Map<String, dynamic> toJson() => {
     "status": status,
     "results": results,
     "data": data?.toJson(),
   };
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
 }
 
 class Data {
@@ -36,13 +40,16 @@ class Data {
 
   Data({required this.accessories});
 
-  factory Data.fromJson(Map<String?, dynamic>? json) => Data(
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
     accessories: List<Accessory>.from(
-      json?["accessories"].map((x) => Accessory.fromJson(x)),
+      (json["accessories"] as List<dynamic>?)?.map(
+            (x) => Accessory.fromJson(x),
+          ) ??
+          [],
     ),
   );
 
-  Map<String?, dynamic>? toJson() => {
+  Map<String, dynamic> toJson() => {
     "accessories": List<dynamic>.from(accessories.map((x) => x.toJson())),
   };
 }
@@ -51,7 +58,7 @@ class Accessory {
   String? id;
   String? name;
   String? description;
-  int? price;
+  double? price;
   List<String> applicableModels;
   String? partNumber;
   String? partNumberStatus;
@@ -64,46 +71,48 @@ class Accessory {
   String? accessoryId;
 
   Accessory({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
+    this.id,
+    this.name,
+    this.description,
+    this.price,
     required this.applicableModels,
-    required this.partNumber,
-    required this.partNumberStatus,
-    required this.status,
-    required this.createdBy,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.v,
+    this.partNumber,
+    this.partNumberStatus,
+    this.status,
+    this.createdBy,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
     required this.applicableModelsDetails,
-    required this.accessoryId,
+    this.accessoryId,
   });
 
-  factory Accessory.fromJson(Map<String?, dynamic>? json) => Accessory(
-    id: json?["_id"],
-    name: json?["name"],
-    description: json?["description"],
-    price: json?["price"],
+  factory Accessory.fromJson(Map<String, dynamic> json) => Accessory(
+    id: json["_id"]?.toString(),
+    name: json["name"]?.toString(),
+    description: json["description"]?.toString(),
+    price: _parseDouble(json["price"]),
     applicableModels: List<String>.from(
-      json?["applicable_models"].map((x) => x),
+      (json["applicable_models"] as List<dynamic>?)?.map((x) => x.toString()) ??
+          [],
     ),
-    partNumber: json?["part_number"],
-    partNumberStatus: json?["part_number_status"],
-    status: json?["status"],
-    createdBy: json?["createdBy"],
-    createdAt: DateTime.parse(json?["createdAt"]),
-    updatedAt: DateTime.parse(json?["updatedAt"]),
-    v: json?["__v"],
+    partNumber: json["part_number"]?.toString(),
+    partNumberStatus: json["part_number_status"]?.toString(),
+    status: json["status"]?.toString(),
+    createdBy: json["createdBy"]?.toString(),
+    createdAt: _parseDateTime(json["createdAt"]),
+    updatedAt: _parseDateTime(json["updatedAt"]),
+    v: _parseInt(json["__v"]),
     applicableModelsDetails: List<ApplicableModelsDetail>.from(
-      json?["applicableModelsDetails"].map(
-        (x) => ApplicableModelsDetail.fromJson(x),
-      ),
+      (json["applicableModelsDetails"] as List<dynamic>?)?.map(
+            (x) => ApplicableModelsDetail.fromJson(x),
+          ) ??
+          [],
     ),
-    accessoryId: json?["id"],
+    accessoryId: json["id"]?.toString(),
   );
 
-  Map<String?, dynamic>? toJson() => {
+  Map<String, dynamic> toJson() => {
     "_id": id,
     "name": name,
     "description": description,
@@ -121,6 +130,29 @@ class Accessory {
     ),
     "id": accessoryId,
   };
+
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  static DateTime? _parseDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
 }
 
 class ApplicableModelsDetail {
@@ -128,20 +160,16 @@ class ApplicableModelsDetail {
   String? type;
   String? id;
 
-  ApplicableModelsDetail({
-    required this.modelName,
-    required this.type,
-    required this.id,
-  });
+  ApplicableModelsDetail({this.modelName, this.type, this.id});
 
-  factory ApplicableModelsDetail.fromJson(Map<String?, dynamic>? json) =>
+  factory ApplicableModelsDetail.fromJson(Map<String, dynamic> json) =>
       ApplicableModelsDetail(
-        modelName: json?["model_name"],
-        type: json?["type"],
-        id: json?["id"],
+        modelName: json["model_name"]?.toString(),
+        type: json["type"]?.toString(),
+        id: json["id"]?.toString(),
       );
 
-  Map<String?, dynamic>? toJson() => {
+  Map<String, dynamic> toJson() => {
     "model_name": modelName,
     "type": type,
     "id": id,

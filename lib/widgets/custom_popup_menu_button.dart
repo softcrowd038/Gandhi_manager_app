@@ -1,48 +1,12 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
+import 'package:gandhi_tvs/pages/allocate_chassis_page.dart';
+import 'package:gandhi_tvs/pages/update_chassis_page.dart';
 
 class CustomPopUpMenuButton extends StatelessWidget {
-  const CustomPopUpMenuButton({
-    super.key,
-    required this.booking,
-    required this.financeLetterProvider,
-    required this.status1,
-    required this.status2,
-  });
+  const CustomPopUpMenuButton({super.key, required this.booking});
 
   final Booking booking;
-  final FinanceLetterProvider financeLetterProvider;
-  final String? status1;
-  final String? status2;
-
-  String _getFinanceLetterLabel() {
-    switch (status1) {
-      case "PENDING":
-        return "Uploaded Finance Letter";
-      case "APPROVED":
-        return "Approved Finance Letter";
-      case "NOT_UPLOADED":
-      default:
-        return "Add Finance Letter";
-    }
-  }
-
-  String _getKycLabel() {
-    switch (status2) {
-      case "PENDING":
-        return "Uploaded KYC";
-      case "APPROVED":
-        return "Approved KYC";
-      case "NOT_UPLOADED":
-      default:
-        return "Add KYC Details";
-    }
-  }
-
-  bool _isFinanceLetterEnabled() =>
-      status1 == "NOT_UPLOADED" || status1 == null;
-
-  bool _isKycEnabled() => status2 == "NOT_UPLOADED" || status2 == null;
 
   @override
   Widget build(BuildContext context) {
@@ -50,40 +14,40 @@ class CustomPopUpMenuButton extends StatelessWidget {
       icon: const Icon(Icons.more_vert),
       color: Colors.white,
       onSelected: (value) {
-        if (value == 'Add Finance Letter') {
-          showFinanceLetterDialog(
-            context: context,
-            customerName:
-                "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
-            financeLetterProvider: financeLetterProvider,
-            bookingId: booking.bookingId,
-          );
-        } else if (value == 'Add KYC Details') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomerKyc(
-                address: booking.customerDetails.address ?? "",
-                bookingId: booking.bookingId ?? "",
-                customerName:
-                    "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
-              ),
-            ),
-          );
-        }
+        booking.status != "ALLOCATED"
+            ? Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AllocateChassisPage(booking: booking),
+                ),
+              )
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UpdateChassisPage(booking: booking),
+                ),
+              );
       },
-      itemBuilder: (BuildContext context) => [
-        PopupMenuItem(
-          value: _isFinanceLetterEnabled() ? "Add Finance Letter" : "",
-          enabled: _isFinanceLetterEnabled(),
-          child: Text(_getFinanceLetterLabel()),
-        ),
-        PopupMenuItem(
-          value: _isKycEnabled() ? "Add KYC Details" : "",
-          enabled: _isKycEnabled(),
-          child: Text(_getKycLabel()),
-        ),
-      ],
+      itemBuilder: (BuildContext context) {
+        return [
+          PopupMenuItem<String>(
+            value: booking.status != "ALLOCATED"
+                ? "Allocate Chassis"
+                : "Update Chassis",
+            child: Row(
+              children: [
+                Icon(Icons.directions_car, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  booking.status != "ALLOCATED"
+                      ? "Allocate Chassis"
+                      : "Update Chassis",
+                ),
+              ],
+            ),
+          ),
+        ];
+      },
     );
   }
 }

@@ -156,6 +156,11 @@ class BookingFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setNote(String value) {
+    _bookingFormModel.note = value;
+    notifyListeners();
+  }
+
   void setPanNumber(String value) {
     _bookingFormModel.customerPanNo = value;
     notifyListeners();

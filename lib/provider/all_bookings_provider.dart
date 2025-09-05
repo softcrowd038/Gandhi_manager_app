@@ -10,18 +10,18 @@ class AllBookingsProvider extends ChangeNotifier {
   bool? get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> getBookingsProvider(BuildContext context) async {
+  Future<void> getBookingsProvider(BuildContext context, String status) async {
     _isLoading = true;
     notifyListeners();
 
     final service = AllBookingsService();
-    final bookings = await service.getAllBookings(context);
+    final bookings = await service.getAllBookings(context, status);
     if (bookings != null) {
       _allBookingsModel = bookings;
       debugPrint(
-        _allBookingsModel?.data?.bookings
-            ?.map((booking) {
-              return booking.customerDetails?.name;
+        _allBookingsModel?.data.bookings
+            .map((booking) {
+              return booking.customerDetails.name;
             })
             .toList()
             .toString(),

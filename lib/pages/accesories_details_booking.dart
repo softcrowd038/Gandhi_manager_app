@@ -154,7 +154,7 @@ class AccessoriesDetailsBooking extends HookWidget {
                     final accessory = accessoriesList[index];
                     return ContainerWithNameAndPrice(
                       accessoryName: accessory.name ?? "",
-                      accessoryValue: accessory.price ?? 0,
+                      accessoryValue: accessory.price?.toInt() ?? 0,
                       onSelectionChanged: () {
                         final selectedAccessoriesIds = <String>[];
                         final selectedProvider =

@@ -35,6 +35,10 @@ class Data {
   List<dynamic> delegatedAccess;
   DateTime? createdAt;
   DateTime? updatedAt;
+  int? totalDeviationAmount;
+  int? perTransactionDeviationLimit;
+  int? currentDeviationUsage;
+  int? availableDeviationAmount;
   bool isFrozen;
   int? v;
   DateTime? lastLogin;
@@ -53,6 +57,10 @@ class Data {
     required this.delegatedAccess,
     required this.createdAt,
     required this.updatedAt,
+    required this.availableDeviationAmount,
+    required this.currentDeviationUsage,
+    required this.perTransactionDeviationLimit,
+    required this.totalDeviationAmount,
     required this.isFrozen,
     required this.v,
     required this.lastLogin,
@@ -81,6 +89,10 @@ class Data {
         ? DateTime.parse(json!["updatedAt"])
         : null,
     isFrozen: json?["isFrozen"],
+    totalDeviationAmount: json?["totalDeviationAmount"],
+    perTransactionDeviationLimit: json?["perTransactionDeviationLimit"],
+    currentDeviationUsage: json?["currentDeviationUsage"],
+    availableDeviationAmount: json?["availableDeviationAmount"],
     v: json?["__v"],
     lastLogin: json?["lastLogin"] != null
         ? DateTime.parse(json!["lastLogin"])
@@ -101,6 +113,10 @@ class Data {
     "delegatedAccess": List<dynamic>.from(delegatedAccess.map((x) => x)),
     "createdAt": createdAt?.toIso8601String(),
     "updatedAt": updatedAt?.toIso8601String(),
+    "totalDeviationAmount": totalDeviationAmount,
+    "perTransactionDeviationLimit": perTransactionDeviationLimit,
+    "currentDeviationUsage": currentDeviationUsage,
+    "availableDeviationAmount": availableDeviationAmount,
     'isFrozen': isFrozen,
     "__v": v,
     "lastLogin": lastLogin?.toIso8601String(),

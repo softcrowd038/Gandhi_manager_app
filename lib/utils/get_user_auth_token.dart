@@ -13,6 +13,9 @@ Future<void> removeAuthToken(BuildContext context) async {
   await prefs.remove('token');
   await prefs.remove('user_id');
   await prefs.remove('role');
+  await prefs.remove('role_name');
+  await prefs.remove('role_id');
+
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(builder: (context) => const UserLogin()),

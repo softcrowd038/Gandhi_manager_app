@@ -10,6 +10,7 @@ class OutlinedBorderTextfieldWidget extends HookWidget {
   final bool obscureText;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
+  final bool? readOnly;
 
   const OutlinedBorderTextfieldWidget({
     super.key,
@@ -22,6 +23,7 @@ class OutlinedBorderTextfieldWidget extends HookWidget {
     required this.obscureText,
     required this.controller,
     required this.keyboardType,
+    this.readOnly,
   });
 
   @override
@@ -31,6 +33,7 @@ class OutlinedBorderTextfieldWidget extends HookWidget {
 
     return TextFormField(
       controller: controller,
+      readOnly: readOnly ?? false,
       cursorColor: Colors.black,
       onChanged: onChanged,
       validator: validator,

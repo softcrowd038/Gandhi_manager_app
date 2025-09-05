@@ -46,12 +46,22 @@ class GetUserDetails {
       prefs.setString('branch', response.data['data']['branch']);
 
       if (response.data['data']['roles'] != null &&
-          response.data['data']['roles'].isNotEmpty) {
-        String roleId = response.data['data']['roles'][0]['_id'];
-        prefs.setString('role_id', roleId);
+          (response.data['data']['roles'] as List).isNotEmpty) {
+        final roles = response.data['data']['roles'] as List;
 
-        String roleName = response.data['data']['roles'][0]['name'];
-        prefs.setString('role_name', roleName);
+        // Take the first role
+        final firstRole = roles.first;
+
+        final String roleId = firstRole['_id'] ?? '';
+        final String roleName = firstRole['name'] ?? '';
+        print(roleName);
+
+        if (roleId.isNotEmpty) {
+          prefs.setString('role_id', roleId);
+        }
+        if (roleName.isNotEmpty) {
+          prefs.setString('role_name', roleName);
+        }
       }
 
       return UserDetails.fromJson(response.data);

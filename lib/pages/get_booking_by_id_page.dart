@@ -35,28 +35,55 @@ class GetBookingByIdPage extends HookWidget {
           },
         ),
         actions: [
-          Consumer<GetBookingsByIdProvider>(
-            builder: (context, bookingProvider, _) {
+          Consumer2<GetBookingsByIdProvider, UserDetailsProvider>(
+            builder: (context, bookingProvider, userDetails, _) {
               final booking = bookingProvider.bookings?.data;
               final formPath = booking?.formPath ?? "";
               final htmlUrl = '$baseImageUrl$formPath';
+              print("boooking :${booking?.status}");
 
               return Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditSelectBookingModelPage(
-                            bookingId: bookingProvider.bookings?.data?.id,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  userDetails.userDetails?.data?.roles.any(
+                            (role) => role.name == "MANAGER",
+                          ) ??
+                          true
+                      ? (booking?.status == "PENDING_APPROVAL"
+                            ? IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditSelectBookingModelPage(
+                                            bookingId: bookingProvider
+                                                .bookings
+                                                ?.data
+                                                ?.id,
+                                          ),
+                                    ),
+                                  );
+                                },
+                              )
+                            : IconButton(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: AppColors.disabled,
+                                ),
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        "NO Edit Available for this booking",
+                                      ),
+                                      backgroundColor: AppColors.error,
+                                    ),
+                                  );
+                                },
+                              ))
+                      : SizedBox.shrink(),
                   booking?.status != "'PENDING_APPROVAL (Discount_Exceeded)'" &&
                           formPath.isNotEmpty
                       ? IconButton(
@@ -120,12 +147,16 @@ class GetBookingByIdPage extends HookWidget {
                                 status1: booking.kycStatus,
                                 value: 'KYC',
                               ),
-                              SizedBox(height: AppDimensions.height1),
-                              StatusChangingContainer(
-                                label: booking.financeLetterStatus,
-                                status1: booking.financeLetterStatus,
-                                value: 'FL',
-                              ),
+                              booking.payment?.type == 'FINANCE'
+                                  ? SizedBox(height: AppDimensions.height1)
+                                  : SizedBox.shrink(),
+                              booking.payment?.type == 'FINANCE'
+                                  ? StatusChangingContainer(
+                                      label: booking.financeLetterStatus,
+                                      status1: booking.financeLetterStatus,
+                                      value: 'FL',
+                                    )
+                                  : SizedBox.shrink(),
                               SizedBox(height: AppDimensions.height1),
                               SizeChangingStatusContainer(
                                 label: booking.status,
@@ -876,8 +907,7 @@ class GetBookingByIdPage extends HookWidget {
                                           ),
                                         ),
                                         Text(
-                                          '${booking.rtoAmount.toString()} ₹' ??
-                                              "0",
+                                          '${booking.rtoAmount.toString()} ₹',
                                           style: TextStyle(
                                             fontWeight: AppFontWeight.bold,
                                           ),
@@ -891,41 +921,45 @@ class GetBookingByIdPage extends HookWidget {
                         ],
                       ),
                     ),
-                    Consumer<UserDetailsProvider>(
-                      builder: (context, user, _) {
-                        return user.userDetails?.data?.roles.any(
-                                  (role) => role.name == "MANAGER",
-                                ) ??
-                                true
-                            ? Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: Consumer<UpdateBookingStatusProvider>(
-                                  builder: (context, statusProvider, _) {
-                                    return GestureDetector(
-                                      onTap: () =>
-                                          statusProvider.updateBookingStatus(
-                                            context,
-                                            booking.id ?? "",
+                    booking.status == "PENDING_APPROVAL"
+                        ? Consumer<UserDetailsProvider>(
+                            builder: (context, user, _) {
+                              return user.userDetails?.data?.roles.any(
+                                        (role) => role.name == "MANAGER",
+                                      ) ??
+                                      true
+                                  ? Positioned(
+                                      bottom: 0,
+                                      left: 0,
+                                      right: 0,
+                                      child:
+                                          Consumer<UpdateBookingStatusProvider>(
+                                            builder:
+                                                (context, statusProvider, _) {
+                                                  return GestureDetector(
+                                                    onTap: () => statusProvider
+                                                        .updateBookingStatus(
+                                                          context,
+                                                          booking.id ?? "",
+                                                        ),
+                                                    child: TheWidthFullButton(
+                                                      lable: getButtonLabel(
+                                                        booking.status,
+                                                        statusProvider,
+                                                      ),
+                                                      color: getButtonColor(
+                                                        booking.status,
+                                                        statusProvider,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
                                           ),
-                                      child: TheWidthFullButton(
-                                        lable: getButtonLabel(
-                                          booking.status,
-                                          statusProvider,
-                                        ),
-                                        color: getButtonColor(
-                                          booking.status,
-                                          statusProvider,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            : SizedBox.shrink();
-                      },
-                    ),
+                                    )
+                                  : SizedBox.shrink();
+                            },
+                          )
+                        : SizedBox.shrink(),
                   ],
                 );
         },

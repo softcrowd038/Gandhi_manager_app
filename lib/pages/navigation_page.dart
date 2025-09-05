@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:gandhi_tvs/common/app_imports.dart';
+import 'package:gandhi_tvs/pages/approved_bookings_page.dart';
 import 'package:provider/provider.dart';
 
 class NavigationPage extends HookWidget {
@@ -12,27 +13,90 @@ class NavigationPage extends HookWidget {
   Widget build(BuildContext context) {
     final selectedIndex = useState(index);
     final userDetailsProvider = context.watch<UserDetailsProvider>();
+    final isLoading = useState(true);
 
     useEffect(() {
-      Future.microtask(() {
-        context.read<UserDetailsProvider>().fetchUserDetails(context);
+      Future.microtask(() async {
+        await context.read<UserDetailsProvider>().fetchUserDetails(context);
+        isLoading.value = false;
       });
       return null;
     }, const []);
 
     final username = userDetailsProvider.userDetails?.data?.name ?? 'User';
 
-    final pages = useMemoized(
-      () => [
-        MyHomePage(),
-        ActivityPage(isActivePage: true),
-        BikeModelsDetails(),
-        AllBookingsPage(),
-      ],
-    );
+    // Using ternary for pages list
+    final pages = isLoading.value
+        ? [MyHomePage()]
+        : [
+                MyHomePage(),
+                ActivityPage(isActivePage: true),
+                BikeModelsDetails(),
+                AllBookingsPage(),
+                // Ternary instead of if condition
+                (userDetailsProvider.userDetails?.data?.roles.any(
+                          (role) => role.name == "MANAGER",
+                        ) ??
+                        false)
+                    ? ApprovedBookingsPage()
+                    : null,
+              ]
+              .where((page) => page != null)
+              .cast<Widget>()
+              .toList(); // Filter out nulls
+
+    // Using ternary for navItems list
+    final navItems = isLoading.value
+        ? [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home, size: SizeConfig.screenHeight * 0.025),
+              label: "Home",
+            ),
+          ]
+        : [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home, size: SizeConfig.screenHeight * 0.025),
+                  label: "Home",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.home_repair_service,
+                    size: SizeConfig.screenHeight * 0.025,
+                  ),
+                  label: "Quotations",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.bike_scooter,
+                    size: SizeConfig.screenHeight * 0.025,
+                  ),
+                  label: "Models",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(FontAwesomeIcons.file),
+                  label: "Bookings",
+                ),
+                // Ternary instead of if condition
+                (userDetailsProvider.userDetails?.data?.roles.any(
+                          (role) => role.name == "MANAGER",
+                        ) ??
+                        false)
+                    ? BottomNavigationBarItem(
+                        icon: Icon(Icons.verified),
+                        label: "Allocate",
+                      )
+                    : null,
+              ]
+              .where((item) => item != null)
+              .cast<BottomNavigationBarItem>()
+              .toList(); // Filter out nulls
 
     void onItemTapped(int index) {
-      selectedIndex.value = index;
+      if (index < pages.length) {
+        selectedIndex.value = index;
+      } else {
+        selectedIndex.value = 0;
+      }
     }
 
     Future<void> handleLogout() async {
@@ -74,41 +138,20 @@ class NavigationPage extends HookWidget {
           _scaffoldKey.currentState?.openDrawer();
         },
       ),
-      body: userDetailsProvider.isLoading
+      body: userDetailsProvider.isLoading || isLoading.value
           ? Center(child: CircularProgressIndicator(color: AppColors.primary))
           : pages[selectedIndex.value],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex.value,
-        backgroundColor: AppColors.surface,
-        elevation: 2,
-        onTap: onItemTapped,
-        selectedItemColor: Color(0xFF4965e9),
-        unselectedItemColor: Colors.black54,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, size: SizeConfig.screenHeight * 0.025),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_repair_service,
-              size: SizeConfig.screenHeight * 0.025,
+      bottomNavigationBar: isLoading.value
+          ? null
+          : BottomNavigationBar(
+              currentIndex: selectedIndex.value.clamp(0, navItems.length - 1),
+              backgroundColor: AppColors.surface,
+              elevation: 2,
+              onTap: onItemTapped,
+              selectedItemColor: Color(0xFF4965e9),
+              unselectedItemColor: Colors.black54,
+              items: navItems,
             ),
-            label: "Quotations",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.bike_scooter,
-              size: SizeConfig.screenHeight * 0.025,
-            ),
-            label: "Models",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.file),
-            label: "Bookings",
-          ),
-        ],
-      ),
     );
   }
 }

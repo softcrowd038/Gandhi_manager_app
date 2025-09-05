@@ -29,9 +29,23 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
 
   Future<void> getUserBranch() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final branchFromPrefs = sharedPreferences.getString('branch');
+    final roleFromPrefs = sharedPreferences.getString('role_name');
 
-    branch = sharedPreferences.getString('branch');
-    roleName = sharedPreferences.getString('role_name');
+    setState(() {
+      branch = branchFromPrefs;
+      roleName = roleFromPrefs;
+    });
+
+    print("roleName: $roleName");
+
+    if (roleName == "MANAGER") {
+      final usersProvider = Provider.of<GetAllUsersProvider>(
+        context,
+        listen: false,
+      );
+      usersProvider.getAllUsersProvider(context);
+    }
   }
 
   @override
@@ -42,12 +56,14 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
         context,
         listen: false,
       );
+      getUserBranch();
       final modelId = selectedModelsProvider.selectedModels.first.id;
       final colorsProvider = Provider.of<ColorsProvider>(
         context,
         listen: false,
       );
       colorsProvider.fetchBikeModelsColor(context, modelId ?? "");
+      print(roleName);
 
       final usersProvider = roleName == "MANAGER"
           ? Provider.of<GetAllUsersProvider>(context, listen: false)
@@ -63,7 +79,6 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
       );
       modelHeadersProvider.fetchModelHeaders(context, modelId ?? "");
     });
-    getUserBranch();
   }
 
   @override
@@ -253,14 +268,15 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
                                     (role) => role.name == 'SALES_EXECUTIVE',
                                   );
                                   final isUserActive = user.status == "ACTIVE";
-                                  // final isUActive = user.isActive == true;
+                                  final isUActive = user.isActive == true;
 
                                   final isBranchAssociated =
                                       user.branch == branch;
                                   return isActive &&
                                       hasSalesExecutiveRole &&
                                       isBranchAssociated &&
-                                      isUserActive;
+                                      isUserActive &&
+                                      isUActive;
                                 })
                                 .toList();
 

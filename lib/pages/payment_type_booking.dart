@@ -170,10 +170,10 @@ class _PaymentTypeBookingState extends State<PaymentTypeBooking> {
                     bookingFormProvider.setScheme(value);
                   },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter finance scheme';
-                    }
-                    return null;
+                    // if (value == null || value.isEmpty) {
+                    //   return 'Please enter finance scheme';
+                    // }
+                    return;
                   },
                   obscureText: false,
                   keyboardType: TextInputType.text,
@@ -188,10 +188,10 @@ class _PaymentTypeBookingState extends State<PaymentTypeBooking> {
                   obscureText: false,
                   controller: emiSchemeController,
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter EMI scheme';
-                    }
-                    return null;
+                    // if (value == null || value.isEmpty) {
+                    //   return 'Please enter EMI scheme';
+                    // }
+                    return;
                   },
                   onChanged: (value) {
                     bookingFormProvider.setEmiDetails(value);

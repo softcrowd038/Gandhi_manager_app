@@ -17,7 +17,7 @@ class SearchField extends HookWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppDimensions.height1),
       child: SizedBox(
-        height: AppDimensions.height8,
+        height: AppDimensions.height5,
         child: TextField(
           controller: controller,
           decoration: InputDecoration(

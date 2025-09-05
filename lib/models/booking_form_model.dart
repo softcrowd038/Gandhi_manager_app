@@ -44,6 +44,7 @@ class BookingFormModel {
   String brokerId;
   int exchangePrice;
   String otp;
+  String note;
   String vehicleNumber;
   String chassisNumber;
 
@@ -86,6 +87,7 @@ class BookingFormModel {
     this.brokerId = '',
     this.exchangePrice = 0,
     this.otp = '',
+    this.note = '',
     this.vehicleNumber = '',
     this.chassisNumber = '',
   });
@@ -131,6 +133,7 @@ class BookingFormModel {
         "selected": accessoryIds.map((id) => {"id": id}).toList(),
       },
       "hpa": hpa,
+      "note": note,
       "exchange": {
         "is_exchange": isExchange,
         "broker_id": brokerId,

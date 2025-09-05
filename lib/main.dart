@@ -1,6 +1,16 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
+import 'package:gandhi_tvs/provider/allocate_chassis_number_provider.dart';
+import 'package:gandhi_tvs/provider/downpayment_provider.dart';
 import 'package:gandhi_tvs/provider/get_all_users_provider.dart';
+import 'package:gandhi_tvs/provider/get_chassis_numbers_provider.dart';
+import 'package:gandhi_tvs/provider/get_finance_letter.dart';
+import 'package:gandhi_tvs/provider/get_pending_request_provider.dart';
+import 'package:gandhi_tvs/provider/update_booking_provider.dart';
 import 'package:gandhi_tvs/provider/update_booking_status.dart';
+import 'package:gandhi_tvs/provider/verify_finance_letter_provider.dart';
+import 'package:gandhi_tvs/provider/verify_kyc_document_provider.dart';
+import 'package:gandhi_tvs/provider/verify_kyc_provider.dart';
+import 'package:gandhi_tvs/provider/verify_updated_request.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -40,6 +50,16 @@ void main() {
         ChangeNotifierProvider(create: (_) => BrokerOtpVerificationProvider()),
         ChangeNotifierProvider(create: (_) => GetAllUsersProvider()),
         ChangeNotifierProvider(create: (_) => UpdateBookingStatusProvider()),
+        ChangeNotifierProvider(create: (_) => UpdateBookingProvider()),
+        ChangeNotifierProvider(create: (_) => DownpaymentProvider()),
+        ChangeNotifierProvider(create: (_) => VerifyKycProvider()),
+        ChangeNotifierProvider(create: (_) => GetFinanceLetterProvider()),
+        ChangeNotifierProvider(create: (_) => VerifyKycDocumentProvider()),
+        ChangeNotifierProvider(create: (_) => VerifyFinanceLetterProvider()),
+        ChangeNotifierProvider(create: (_) => AllocateChassisProvider()),
+        ChangeNotifierProvider(create: (_) => GetChassisNumbersProvider()),
+        ChangeNotifierProvider(create: (_) => GetPendingRequestsProvider()),
+        ChangeNotifierProvider(create: (_) => VerifyUpdatedRequestProvider()),
       ],
       child: const MyApp(),
     ),
