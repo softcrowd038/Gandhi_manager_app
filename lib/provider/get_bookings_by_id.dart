@@ -1,5 +1,6 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/get_booking_by_id.dart';
+import 'package:gandhi_tvs/services/get_booking_by_id.dart';
 
 class GetBookingsByIdProvider with ChangeNotifier {
   GetBookingsByIdModel? _bookings;

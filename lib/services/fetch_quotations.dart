@@ -20,37 +20,71 @@ class AllQuotationService {
     );
   }
 
-  Future<AllQuotationModel> fetchQuotation(BuildContext context) async {
+  Future<AllQuotationModel> fetchQuotations(BuildContext context) async {
     try {
       final dio = await getDioInstance();
       final response = await dio.get('quotations');
+    
 
       if (response.statusCode == 200) {
+      
         return AllQuotationModel.fromJson(response.data);
       } else {
-        // handleErrorResponse(response.statusCode, context);
-        throw Exception('Failed to load quotations');
+        _handleErrorResponse(response.statusCode, context);
+        throw Exception(
+          'Failed to load quotations: Status code ${response.statusCode}',
+        );
       }
-    } on DioError catch (e) {
-      // handleErrorResponse(e.response?.statusCode, context);
-      throw Exception('Error: ${e.message}');
     } catch (e) {
-      String errorMessage = "Something went wrong";
-
-      if (e is DioException) {
-        if (e.response != null && e.response?.data != null) {
-          errorMessage = e.response?.data['message'] ?? errorMessage;
-        } else {
-          errorMessage = e.message ?? "";
-        }
-      } else {
-        errorMessage = e.toString();
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: Colors.red, content: Text(errorMessage)),
-      );
-      throw Exception('Error: $errorMessage');
+      _handleGenericError(e, context);
+      throw Exception('Unexpected error: $e');
     }
+  }
+
+  void _handleErrorResponse(int? statusCode, BuildContext context) {
+    String errorMessage = "Failed to load quotations";
+
+    switch (statusCode) {
+      case 401:
+        errorMessage = "Unauthorized access. Please login again.";
+        break;
+      case 403:
+        errorMessage = "Access forbidden";
+        break;
+      case 404:
+        errorMessage = "Quotations not found";
+        break;
+      case 500:
+        errorMessage = "Server error. Please try again later.";
+        break;
+      default:
+        errorMessage = "Failed to load quotations (Error: $statusCode)";
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(errorMessage),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _handleGenericError(dynamic e, BuildContext context) {
+    String errorMessage = "Something went wrong";
+
+    if (e is String) {
+      errorMessage = e;
+    } else if (e is Exception) {
+      errorMessage = e.toString();
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(errorMessage),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 }

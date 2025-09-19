@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class DownpaymentModel {
   final String bookingId;
   final double disbursementAmount;

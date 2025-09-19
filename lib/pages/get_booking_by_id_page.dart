@@ -1,7 +1,5 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:gandhi_tvs/pages/edit_select_booking_model_page.dart';
-import 'package:gandhi_tvs/provider/update_booking_status.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:gandhi_tvs/common/app_imports.dart';
@@ -40,7 +38,6 @@ class GetBookingByIdPage extends HookWidget {
               final booking = bookingProvider.bookings?.data;
               final formPath = booking?.formPath ?? "";
               final htmlUrl = '$baseImageUrl$formPath';
-              print("boooking :${booking?.status}");
 
               return Row(
                 mainAxisSize: MainAxisSize.min,
@@ -49,7 +46,9 @@ class GetBookingByIdPage extends HookWidget {
                             (role) => role.name == "MANAGER",
                           ) ??
                           true
-                      ? (booking?.status == "PENDING_APPROVAL"
+                      ? (booking?.status == "PENDING_APPROVAL" ||
+                                booking?.status ==
+                                    "PENDING_APPROVAL (Discount_Exceeded)"
                             ? IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
@@ -84,7 +83,7 @@ class GetBookingByIdPage extends HookWidget {
                                 },
                               ))
                       : SizedBox.shrink(),
-                  booking?.status != "'PENDING_APPROVAL (Discount_Exceeded)'" &&
+                  booking?.status != "PENDING_APPROVAL (Discount_Exceeded)" &&
                           formPath.isNotEmpty
                       ? IconButton(
                           icon: const Icon(Icons.download),
@@ -97,7 +96,7 @@ class GetBookingByIdPage extends HookWidget {
                           },
                         )
                       : const SizedBox.shrink(),
-                  booking?.status != "'PENDING_APPROVAL (Discount_Exceeded)'" &&
+                  booking?.status != "PENDING_APPROVAL (Discount_Exceeded)" &&
                           formPath.isNotEmpty
                       ? IconButton(
                           icon: const Icon(Icons.print),
@@ -772,7 +771,7 @@ class GetBookingByIdPage extends HookWidget {
                                       ),
                                       if (booking.discounts.isNotEmpty)
                                         Text(
-                                          '${booking.discounts[0].amount.toString()} ₹', // Using first discount as primary
+                                          '${booking.discounts[0].amount.toString()} ₹',
                                           style: TextStyle(
                                             fontWeight: AppFontWeight.w500,
                                             color: AppColors.error,
@@ -895,33 +894,37 @@ class GetBookingByIdPage extends HookWidget {
                                   ),
                                 ],
                               ),
-                              subtitle: booking.rto != null
-                                  ? Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "RTO Amount:",
-                                          style: TextStyle(
-                                            fontWeight: AppFontWeight.w500,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${booking.rtoAmount.toString()} ₹',
-                                          style: TextStyle(
-                                            fontWeight: AppFontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : SizedBox.shrink(),
+                              // subtitle: booking.rto != null
+                              //     ? Row(
+                              //         mainAxisAlignment:
+                              //             MainAxisAlignment.spaceBetween,
+                              //         children: [
+                              //           Text(
+                              //             "RTO Amount:",
+                              //             style: TextStyle(
+                              //               fontWeight: AppFontWeight.w500,
+                              //             ),
+                              //           ),
+                              //           Text(
+                              //             booking.rtoAmount == null
+                              //                 ? '${booking.rtoAmount} ₹'
+                              //                 : '0 ₹',
+                              //             style: TextStyle(
+                              //               fontWeight: AppFontWeight.bold,
+                              //             ),
+                              //           ),
+                              //         ],
+                              //       )
+                              //     : SizedBox.shrink(),
                             ),
                           ),
                           SizedBox(height: AppDimensions.height5),
                         ],
                       ),
                     ),
-                    booking.status == "PENDING_APPROVAL"
+                    booking.status == "PENDING_APPROVAL" ||
+                            booking.status ==
+                                "PENDING_APPROVAL (Discount_Exceeded)"
                         ? Consumer<UserDetailsProvider>(
                             builder: (context, user, _) {
                               return user.userDetails?.data?.roles.any(
@@ -936,20 +939,24 @@ class GetBookingByIdPage extends HookWidget {
                                           Consumer<UpdateBookingStatusProvider>(
                                             builder:
                                                 (context, statusProvider, _) {
-                                                  return GestureDetector(
-                                                    onTap: () => statusProvider
-                                                        .updateBookingStatus(
-                                                          context,
-                                                          booking.id ?? "",
+                                                  return SafeArea(
+                                                    bottom: true,
+                                                    minimum: AppPadding.p2,
+                                                    child: GestureDetector(
+                                                      onTap: () => statusProvider
+                                                          .updateBookingStatus(
+                                                            context,
+                                                            booking.id ?? "",
+                                                          ),
+                                                      child: TheWidthFullButton(
+                                                        lable: getButtonLabel(
+                                                          booking.status,
+                                                          statusProvider,
                                                         ),
-                                                    child: TheWidthFullButton(
-                                                      lable: getButtonLabel(
-                                                        booking.status,
-                                                        statusProvider,
-                                                      ),
-                                                      color: getButtonColor(
-                                                        booking.status,
-                                                        statusProvider,
+                                                        color: getButtonColor(
+                                                          booking.status,
+                                                          statusProvider,
+                                                        ),
                                                       ),
                                                     ),
                                                   );

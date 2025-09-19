@@ -49,16 +49,25 @@ class ContainerWithNameAndPrice extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  accessoryName,
-                  style: TextStyle(
-                    fontSize: SizeConfig.screenHeight * 0.018,
-                    color: isSelected ? Colors.blue.shade900 : Colors.black,
-                    fontWeight: AppFontWeight.bold,
+                Expanded(
+                  // ← Added Expanded here for the name
+                  child: Text(
+                    accessoryName,
+                    style: TextStyle(
+                      fontSize: SizeConfig.screenHeight * 0.016,
+                      color: isSelected ? Colors.blue.shade900 : Colors.black,
+                      fontWeight: AppFontWeight.bold,
+                    ),
+                    overflow:
+                        TextOverflow.ellipsis, // ← Added overflow handling
+                    maxLines: 2, // ← Ensure single line with ellipsis
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: const EdgeInsets.only(
+                    left: 8.0,
+                    right: 8.0,
+                  ), // ← Added left padding
                   child: Text(
                     '₹$accessoryValue',
                     style: TextStyle(

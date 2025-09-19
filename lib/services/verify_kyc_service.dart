@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/get_kyc_model.dart';
 
@@ -25,7 +27,6 @@ class GetKycService {
       Dio dio = await getDioInstance();
 
       final response = await dio.get('kyc/$bookingId/documents');
-      print(response.statusCode);
       handleErrorResponse(response.statusCode, context);
 
       return GetKycModel.fromJson(response.data);

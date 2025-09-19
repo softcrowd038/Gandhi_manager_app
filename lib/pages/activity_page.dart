@@ -32,8 +32,7 @@ class _ActivityPageState extends State<ActivityPage> {
       context,
       listen: false,
     );
-    final allQuotations =
-        allQuotationProvider.quotation?.data?.quotations ?? [];
+    final allQuotations = allQuotationProvider.quotation?.data.quotations ?? [];
 
     setState(() {
       if (query.isEmpty) {
@@ -41,7 +40,7 @@ class _ActivityPageState extends State<ActivityPage> {
       } else {
         filteredQuotations = allQuotations
             .where(
-              (quotation) => quotation.customer!.name!.toLowerCase().contains(
+              (quotation) => quotation.customer.name.toLowerCase().contains(
                 query.toLowerCase(),
               ),
             )
@@ -71,11 +70,9 @@ class _ActivityPageState extends State<ActivityPage> {
                 return Center(
                   child: CircularProgressIndicator(color: AppColors.primary),
                 );
-              } else if (provider.errorMessage != null) {
-                return Center(child: Text('Error: ${provider.errorMessage}'));
               } else {
                 final quotationsToDisplay = searchController.text.isEmpty
-                    ? provider.quotation?.data?.quotations ?? []
+                    ? provider.quotation?.data.quotations ?? []
                     : filteredQuotations;
 
                 if (quotationsToDisplay.isEmpty) {
@@ -96,14 +93,16 @@ class _ActivityPageState extends State<ActivityPage> {
                 return ListView.builder(
                   itemCount: widget.isActivePage
                       ? quotationsToDisplay.length
+                      : quotationsToDisplay.length < 5
+                      ? quotationsToDisplay.length
                       : 5,
                   itemBuilder: (context, index) {
                     final quotation = quotationsToDisplay[index];
                     final customer = quotation.customer;
                     final models = quotation.models;
 
-                    final customerName = customer?.name;
-                    final customerAddress = quotation.customer?.mobile1;
+                    final customerName = customer.name;
+                    final customerAddress = quotation.customer.mobile1;
                     final modelName =
                         (models.isNotEmpty && models.first.modelName != null)
                         ? models.first.modelName
@@ -112,15 +111,13 @@ class _ActivityPageState extends State<ActivityPage> {
                     final quotationId = quotation.id;
 
                     return ActivityCard(
-                      customerName: customerName ?? "",
-                      customerAddress: customerAddress ?? "",
+                      customerName: customerName,
+                      customerAddress: customerAddress,
                       modelName: modelName.toString(),
-                      phoneNumber: customer?.mobile1 ?? "",
-                      quotationId: quotationId ?? "",
+                      phoneNumber: customer.mobile1,
+                      quotationId: quotationId,
                       customerExpectedDate: usefulFunctions
-                          .formatDateToYyyyMmDd(
-                            quotation.expectedDeliveryDate!,
-                          ),
+                          .formatDateToYyyyMmDd(quotation.expectedDeliveryDate),
                     );
                   },
                 );

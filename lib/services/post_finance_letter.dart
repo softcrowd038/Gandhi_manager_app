@@ -23,7 +23,9 @@ class PostFinanceService {
     BuildContext context,
     FinanceLetterModel financeLetterModel,
     String? bookingId,
+    bool isIndexThree,
   ) async {
+    print(isIndexThree);
     try {
       final dio = await getDioInstance();
 
@@ -44,7 +46,9 @@ class PostFinanceService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => NavigationPage(index: 3)),
+          MaterialPageRoute(
+            builder: (context) => NavigationPage(index: isIndexThree ? 3 : 4),
+          ),
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Finance Letter posted successfully")),

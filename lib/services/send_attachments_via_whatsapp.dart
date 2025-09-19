@@ -1,4 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
+
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 class WhatsAppApiService {
   final Dio _dio = Dio(
@@ -41,6 +46,77 @@ class WhatsAppApiService {
         'status': 'error',
         'message': 'Unexpected error: ${e.toString()}',
       };
+    }
+  }
+
+  Future<Dio> getDioInstance() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    return Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>?> sendQuotationOnWhatsApp(
+    BuildContext context,
+    String quotationId, {
+    List<String> imageLinks = const [],
+  }) async {
+    try {
+      final dio = await getDioInstance();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sending via WhatsApp...'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.amber,
+        ),
+      );
+
+      final response = await dio.post(
+        'quotations/$quotationId/send-whatsapp',
+        data: {'sendMedia': imageLinks.isNotEmpty ? imageLinks : []},
+      );
+
+      if (response.statusCode == 200) {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content: Text('Sent successfully via WhatsApp'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => NavigationPage(index: 1)),
+          (Route<dynamic> route) => false,
+        );
+
+        return response.data;
+      } else {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text('Failed: ${response.statusMessage}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return null;
+      }
+    } catch (e) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return null;
     }
   }
 

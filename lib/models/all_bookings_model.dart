@@ -2,8 +2,31 @@
 
 import 'package:gandhi_tvs/common/app_imports.dart';
 
-AllBookingModel allBookingModelFromJson(String? str) =>
-    AllBookingModel.fromJson(json.decode(str ?? ""));
+AllBookingModel allBookingModelFromJson(String? str) {
+  if (str == null || str.isEmpty) {
+    return AllBookingModel(
+      success: false,
+      data: Data(bookings: [], total: 0, pages: 0, currentPage: 0),
+    );
+  }
+
+  try {
+    final decoded = json.decode(str);
+    if (decoded is Map<String, dynamic>) {
+      return AllBookingModel.fromJson(decoded);
+    } else {
+      return AllBookingModel(
+        success: false,
+        data: Data(bookings: [], total: 0, pages: 0, currentPage: 0),
+      );
+    }
+  } catch (e) {
+    return AllBookingModel(
+      success: false,
+      data: Data(bookings: [], total: 0, pages: 0, currentPage: 0),
+    );
+  }
+}
 
 String? allBookingModelToJson(AllBookingModel data) =>
     json.encode(data.toJson());
@@ -16,11 +39,15 @@ class AllBookingModel {
 
   factory AllBookingModel.fromJson(Map<String, dynamic> json) =>
       AllBookingModel(
-        success: json["success"],
-        data: Data.fromJson(json["data"]),
+        success: json["success"] ?? false,
+        data: json["data"] is Map<String, dynamic>
+            ? Data.fromJson(json["data"])
+            : Data(bookings: [], total: 0, pages: 0, currentPage: 0),
       );
-
-  Map<String, dynamic> toJson() => {"success": success, "data": data.toJson()};
+  Map<String?, dynamic>? toJson() => {
+    "success": success,
+    "data": data.toJson(),
+  };
 }
 
 class Data {
@@ -37,15 +64,19 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    bookings: json["bookings"] == null
-        ? []
-        : List<Booking>.from(json["bookings"].map((x) => Booking.fromJson(x))),
-    total: _parseInt(json["total"]),
-    pages: _parseInt(json["pages"]),
-    currentPage: _parseInt(json["currentPage"]),
+    bookings: json["bookings"] is List
+        ? List<Booking>.from(
+            (json["bookings"] as List).map(
+              (x) => x is Map<String, dynamic> ? Booking.fromJson(x) : [],
+            ),
+          )
+        : [],
+    total: _parseInt(json["total"] ?? 0),
+    pages: _parseInt(json["pages"] ?? 0),
+    currentPage: _parseInt(json["currentPage"] ?? 0),
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "bookings": List<dynamic>.from(bookings.map((x) => x.toJson())),
     "total": total,
     "pages": pages,
@@ -184,103 +215,103 @@ class Booking {
     this.motorNumber,
   });
 
-  factory Booking.fromJson(Map<String, dynamic> json) => Booking(
-    id: json["_id"]?.toString(),
-    model: Model.fromJson(json["model"]),
-    bookingType: json["bookingType"] ?? "BRANCH",
-    color: Color.fromJson(json["color"]),
-    chassisNumberChangeAllowed: json["chassisNumberChangeAllowed"],
-    customerType: json["customerType"] ?? "B2C",
-    isCsd: json["isCSD"],
-    gstin: json["gstin"]?.toString(),
-    rto: json["rto"] ?? "MH",
-    rtoStatus: json["rtoStatus"] ?? "PENDING",
-    rtoAmount: _parseInt(json["rtoAmount"]),
-    hpa: json["hpa"],
-    hypothecationCharges: _parseInt(json["hypothecationCharges"]),
-    kycStatus: json["kycStatus"] ?? "APPROVED",
-    financeLetterStatus: json["financeLetterStatus"] ?? "APPROVED",
-    customerDetails: CustomerDetails.fromJson(json["customerDetails"]),
-    exchange: json["exchange"],
-    exchangeDetails: json["exchangeDetails"] == null
+  factory Booking.fromJson(Map<String?, dynamic>? json) => Booking(
+    id: json?["_id"]?.toString(),
+    model: Model.fromJson(json?["model"]),
+    bookingType: json?["bookingType"] ?? "BRANCH",
+    color: Color.fromJson(json?["color"]),
+    chassisNumberChangeAllowed: json?["chassisNumberChangeAllowed"],
+    customerType: json?["customerType"] ?? "B2C",
+    isCsd: json?["isCSD"],
+    gstin: json?["gstin"]?.toString(),
+    rto: json?["rto"] ?? "MH",
+    rtoStatus: json?["rtoStatus"] ?? "PENDING",
+    rtoAmount: _parseInt(json?["rtoAmount"]),
+    hpa: json?["hpa"],
+    hypothecationCharges: _parseInt(json?["hypothecationCharges"]),
+    kycStatus: json?["kycStatus"] ?? "APPROVED",
+    financeLetterStatus: json?["financeLetterStatus"] ?? "APPROVED",
+    customerDetails: CustomerDetails.fromJson(json?["customerDetails"]),
+    exchange: json?["exchange"],
+    exchangeDetails: json?["exchangeDetails"] == null
         ? null
-        : ExchangeDetails.fromJson(json["exchangeDetails"]),
-    payment: Payment.fromJson(json["payment"]),
-    accessories: json["accessories"] == null
+        : ExchangeDetails.fromJson(json?["exchangeDetails"]),
+    payment: Payment.fromJson(json?["payment"]),
+    accessories: json?["accessories"] == null
         ? []
         : List<Accessory>.from(
-            json["accessories"].map((x) => Accessory.fromJson(x)),
+            json?["accessories"].map((x) => Accessory.fromJson(x)),
           ),
-    priceComponents: json["priceComponents"] == null
+    priceComponents: json?["priceComponents"] == null
         ? []
         : List<PriceComponent>.from(
-            json["priceComponents"].map((x) => PriceComponent.fromJson(x)),
+            json?["priceComponents"].map((x) => PriceComponent.fromJson(x)),
           ),
-    discounts: json["discounts"] == null
+    discounts: json?["discounts"] == null
         ? []
         : List<Discount>.from(
-            json["discounts"].map((x) => Discount.fromJson(x)),
+            json?["discounts"].map((x) => Discount.fromJson(x)),
           ),
-    accessoriesTotal: _parseInt(json["accessoriesTotal"]),
-    totalAmount: _parseInt(json["totalAmount"]),
-    discountedAmount: _parseInt(json["discountedAmount"]),
-    receivedAmount: _parseInt(json["receivedAmount"]),
-    receipts: json["receipts"] == null
+    accessoriesTotal: _parseInt(json?["accessoriesTotal"]),
+    totalAmount: _parseInt(json?["totalAmount"]),
+    discountedAmount: _parseInt(json?["discountedAmount"]),
+    receivedAmount: _parseInt(json?["receivedAmount"]),
+    receipts: json?["receipts"] == null
         ? []
-        : List<dynamic>.from(json["receipts"].map((x) => x)),
-    ledgerEntries: json["ledgerEntries"] == null
+        : List<dynamic>.from(json?["receipts"].map((x) => x)),
+    ledgerEntries: json?["ledgerEntries"] == null
         ? []
-        : List<dynamic>.from(json["ledgerEntries"].map((x) => x)),
-    status: json["status"] ?? "ALLOCATED",
-    insuranceStatus: json["insuranceStatus"] ?? "AWAITING",
-    branch: json["branch"] == null ? null : Branch.fromJson(json["branch"]),
-    createdBy: CreatedBy.fromJson(json["createdBy"]),
-    salesExecutive: json["salesExecutive"] == null
+        : List<dynamic>.from(json?["ledgerEntries"].map((x) => x)),
+    status: json?["status"] ?? "ALLOCATED",
+    insuranceStatus: json?["insuranceStatus"] ?? "AWAITING",
+    branch: json?["branch"] == null ? null : Branch.fromJson(json?["branch"]),
+    createdBy: CreatedBy.fromJson(json?["createdBy"]),
+    salesExecutive: json?["salesExecutive"] == null
         ? null
-        : CreatedBy.fromJson(json["salesExecutive"]),
-    formPath: json["formPath"]?.toString(),
-    formGenerated: json["formGenerated"],
-    qrCode: json["qrCode"]?.toString(),
-    pendingUpdates: json["pendingUpdates"],
-    updateRequestStatus: json["updateRequestStatus"] ?? "NONE",
-    updateRequestNote: json["updateRequestNote"]?.toString(),
-    updateRequestSubmitted: json["updateRequestSubmitted"],
-    chassisNumberHistory: json["chassisNumberHistory"] == null
+        : CreatedBy.fromJson(json?["salesExecutive"]),
+    formPath: json?["formPath"]?.toString(),
+    formGenerated: json?["formGenerated"],
+    qrCode: json?["qrCode"]?.toString(),
+    pendingUpdates: json?["pendingUpdates"],
+    updateRequestStatus: json?["updateRequestStatus"] ?? "NONE",
+    updateRequestNote: json?["updateRequestNote"]?.toString(),
+    updateRequestSubmitted: json?["updateRequestSubmitted"],
+    chassisNumberHistory: json?["chassisNumberHistory"] == null
         ? []
-        : List<dynamic>.from(json["chassisNumberHistory"].map((x) => x)),
-    brokerLedgerEntries: json["brokerLedgerEntries"] == null
+        : List<dynamic>.from(json?["chassisNumberHistory"].map((x) => x)),
+    brokerLedgerEntries: json?["brokerLedgerEntries"] == null
         ? []
         : List<BrokerLedgerEntry>.from(
-            json["brokerLedgerEntries"].map(
+            json?["brokerLedgerEntries"].map(
               (x) => BrokerLedgerEntry.fromJson(x),
             ),
           ),
-    balanceAmount: _parseInt(json["balanceAmount"]),
-    createdAt: json["createdAt"] == null
+    balanceAmount: _parseInt(json?["balanceAmount"]),
+    createdAt: json?["createdAt"] == null
         ? null
-        : DateTime.tryParse(json["createdAt"]?.toString() ?? ''),
-    updatedAt: json["updatedAt"] == null
+        : DateTime.tryParse(json?["createdAt"]?.toString() ?? ''),
+    updatedAt: json?["updatedAt"] == null
         ? null
-        : DateTime.tryParse(json["updatedAt"]?.toString() ?? ''),
-    bookingNumber: json["bookingNumber"]?.toString(),
-    v: _parseInt(json["__v"]),
-    bookingId: json["id"]?.toString(),
-    documentStatus: DocumentStatus.fromJson(json["documentStatus"]),
-    subdealer: json["subdealer"]?.toString(),
-    subdealerUser: json["subdealerUser"]?.toString(),
-    approvedAt: json["approvedAt"] == null
+        : DateTime.tryParse(json?["updatedAt"]?.toString() ?? ''),
+    bookingNumber: json?["bookingNumber"]?.toString(),
+    v: _parseInt(json?["__v"]),
+    bookingId: json?["id"]?.toString(),
+    documentStatus: DocumentStatus.fromJson(json?["documentStatus"]),
+    subdealer: json?["subdealer"]?.toString(),
+    subdealerUser: json?["subdealerUser"]?.toString(),
+    approvedAt: json?["approvedAt"] == null
         ? null
-        : DateTime.tryParse(json["approvedAt"]?.toString() ?? ''),
-    approvedBy: json["approvedBy"]?.toString(),
-    chassisNumber: json["chassisNumber"]?.toString(),
-    batteryNumber: json["batteryNumber"],
-    chargerNumber: json["chargerNumber"],
-    engineNumber: json["engineNumber"],
-    keyNumber: json["keyNumber"],
-    motorNumber: json["motorNumber"],
+        : DateTime.tryParse(json?["approvedAt"]?.toString() ?? ''),
+    approvedBy: json?["approvedBy"]?.toString(),
+    chassisNumber: json?["chassisNumber"]?.toString(),
+    batteryNumber: json?["batteryNumber"],
+    chargerNumber: json?["chargerNumber"],
+    engineNumber: json?["engineNumber"],
+    keyNumber: json?["keyNumber"],
+    motorNumber: json?["motorNumber"],
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "_id": id,
     "model": model.toJson(),
     "bookingType": bookingType,
@@ -370,14 +401,14 @@ class Accessory {
     required this.isAdjustment,
   });
 
-  factory Accessory.fromJson(Map<String, dynamic> json) => Accessory(
-    accessory: json["accessory"]?.toString(),
-    price: _parseInt(json["price"]),
-    discount: _parseInt(json["discount"]),
-    isAdjustment: json["isAdjustment"],
+  factory Accessory.fromJson(Map<String?, dynamic>? json) => Accessory(
+    accessory: json?["accessory"]?.toString(),
+    price: _parseInt(json?["price"]),
+    discount: _parseInt(json?["discount"]),
+    isAdjustment: json?["isAdjustment"],
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "accessory": accessory,
     "price": price,
     "discount": discount,
@@ -394,19 +425,19 @@ class Accessory {
 }
 
 class Branch {
-  String id;
-  String name;
-  String address;
-  String city;
-  String state;
+  String? id;
+  String? name;
+  String? address;
+  String? city;
+  String? state;
   String? pincode;
   String? phone;
-  String email;
-  String gstNumber;
+  String? email;
+  String? gstNumber;
   bool? isActive;
-  String logo1;
-  String logo2;
-  String createdBy;
+  String? logo1;
+  String? logo2;
+  String? createdBy;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
@@ -434,38 +465,38 @@ class Branch {
     required this.openingBalanceHistory,
   });
 
-  factory Branch.fromJson(Map<String, dynamic> json) => Branch(
-    id: json["_id"] ?? "",
-    name: json["name"] ?? "",
-    address: json["address"] ?? "",
-    city: json["city"] ?? "",
-    state: json["state"] ?? "",
-    pincode: json["pincode"]?.toString(),
-    phone: json["phone"]?.toString(),
-    email: json["email"] ?? "",
-    gstNumber: json["gst_number"] ?? "",
-    isActive: json["is_active"],
-    logo1: json["logo1"] ?? "",
-    logo2: json["logo2"] ?? "",
-    createdBy: json["createdBy"] ?? "",
-    createdAt: json["createdAt"] == null
+  factory Branch.fromJson(Map<String?, dynamic>? json) => Branch(
+    id: json?["_id"] ?? "",
+    name: json?["name"] ?? "",
+    address: json?["address"] ?? "",
+    city: json?["city"] ?? "",
+    state: json?["state"] ?? "",
+    pincode: json?["pincode"]?.toString(),
+    phone: json?["phone"]?.toString(),
+    email: json?["email"] ?? "",
+    gstNumber: json?["gst_number"] ?? "",
+    isActive: json?["is_active"],
+    logo1: json?["logo1"] ?? "",
+    logo2: json?["logo2"] ?? "",
+    createdBy: json?["createdBy"]?.toString() ?? "", // Added null check
+    createdAt: json?["createdAt"] == null
         ? null
-        : DateTime.tryParse(json["createdAt"]?.toString() ?? ''),
-    updatedAt: json["updatedAt"] == null
+        : DateTime.tryParse(json?["createdAt"]?.toString() ?? ''),
+    updatedAt: json?["updatedAt"] == null
         ? null
-        : DateTime.tryParse(json["updatedAt"]?.toString() ?? ''),
-    v: _parseInt(json["__v"]),
-    openingBalance: _parseInt(json["opening_balance"]),
-    openingBalanceHistory: json["opening_balance_history"] == null
-        ? []
-        : List<OpeningBalanceHistory>.from(
-            json["opening_balance_history"].map(
-              (x) => OpeningBalanceHistory.fromJson(x),
-            ),
-          ),
+        : DateTime.tryParse(json?["updatedAt"]?.toString() ?? ''),
+    v: _parseInt(json?["__v"]),
+    openingBalance: _parseInt(json?["opening_balance"]),
+    openingBalanceHistory: json?["opening_balance_history"] is List
+        ? List<OpeningBalanceHistory>.from(
+            json?["opening_balance_history"]
+                .where((x) => x is Map<String?, dynamic>?)
+                .map((x) => OpeningBalanceHistory.fromJson(x)),
+          )
+        : [], // Filter out non-map values
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "_id": id,
     "name": name,
     "address": address,
@@ -499,9 +530,9 @@ class Branch {
 
 class OpeningBalanceHistory {
   int? amount;
-  String updatedBy;
-  String note;
-  String id;
+  String? updatedBy;
+  String? note;
+  String? id;
   DateTime? date;
 
   OpeningBalanceHistory({
@@ -512,18 +543,18 @@ class OpeningBalanceHistory {
     required this.date,
   });
 
-  factory OpeningBalanceHistory.fromJson(Map<String, dynamic> json) =>
+  factory OpeningBalanceHistory.fromJson(Map<String?, dynamic>? json) =>
       OpeningBalanceHistory(
-        amount: _parseInt(json["amount"]),
-        updatedBy: json["updatedBy"] ?? "",
-        note: json["note"] ?? "",
-        id: json["_id"] ?? "",
-        date: json["date"] == null
+        amount: _parseInt(json?["amount"]),
+        updatedBy: json?["updatedBy"]?.toString() ?? "", // Added null check
+        note: json?["note"]?.toString() ?? "", // Added null check
+        id: json?["_id"]?.toString() ?? "", // Added null check
+        date: json?["date"] == null
             ? null
-            : DateTime.tryParse(json["date"]?.toString() ?? ''),
+            : DateTime.tryParse(json?["date"]?.toString() ?? ''),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "amount": amount,
     "updatedBy": updatedBy,
     "note": note,
@@ -543,7 +574,7 @@ class OpeningBalanceHistory {
 class BrokerLedgerEntry {
   String? ledger;
   int? amount;
-  String type;
+  String? type;
   DateTime? createdAt;
   String? id;
 
@@ -555,18 +586,18 @@ class BrokerLedgerEntry {
     required this.id,
   });
 
-  factory BrokerLedgerEntry.fromJson(Map<String, dynamic> json) =>
+  factory BrokerLedgerEntry.fromJson(Map<String?, dynamic>? json) =>
       BrokerLedgerEntry(
-        ledger: json["ledger"]?.toString(),
-        amount: _parseInt(json["amount"]),
-        type: json["type"] ?? "EXCHANGE_AND_COMMISSION",
-        createdAt: json["createdAt"] == null
+        ledger: json?["ledger"]?.toString(),
+        amount: _parseInt(json?["amount"]),
+        type: json?["type"] ?? "EXCHANGE_AND_COMMISSION",
+        createdAt: json?["createdAt"] == null
             ? null
-            : DateTime.tryParse(json["createdAt"]?.toString() ?? ''),
-        id: json["_id"]?.toString(),
+            : DateTime.tryParse(json?["createdAt"]?.toString() ?? ''),
+        id: json?["_id"]?.toString(),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "ledger": ledger,
     "amount": amount,
     "type": type,
@@ -584,15 +615,15 @@ class BrokerLedgerEntry {
 }
 
 class Color {
-  String id;
-  String name;
+  String? id;
+  String? name;
 
   Color({required this.id, required this.name});
 
-  factory Color.fromJson(Map<String, dynamic> json) =>
-      Color(id: json["_id"] ?? "", name: json["name"] ?? "");
+  factory Color.fromJson(Map<String?, dynamic>? json) =>
+      Color(id: json?["_id"] ?? "", name: json?["name"] ?? "");
 
-  Map<String, dynamic> toJson() => {"_id": id, "name": name};
+  Map<String?, dynamic>? toJson() => {"_id": id, "name": name};
 }
 
 class CreatedBy {
@@ -602,19 +633,19 @@ class CreatedBy {
 
   CreatedBy({required this.id, required this.name, required this.email});
 
-  factory CreatedBy.fromJson(Map<String, dynamic> json) => CreatedBy(
-    id: json["_id"]?.toString(),
-    name: json["name"] ?? "",
-    email: json["email"]?.toString(),
+  factory CreatedBy.fromJson(Map<String?, dynamic>? json) => CreatedBy(
+    id: json?["_id"]?.toString(),
+    name: json?["name"] ?? "",
+    email: json?["email"]?.toString(),
   );
 
-  Map<String, dynamic> toJson() => {"_id": id, "name": name, "email": email};
+  Map<String?, dynamic>? toJson() => {"_id": id, "name": name, "email": email};
 }
 
 class CustomerDetails {
-  String salutation;
+  String? salutation;
   String? name;
-  String panNo;
+  String? panNo;
   DateTime? dob;
   String? occupation;
   String? address;
@@ -646,28 +677,28 @@ class CustomerDetails {
     this.nomineeAge,
   });
 
-  factory CustomerDetails.fromJson(Map<String, dynamic> json) =>
+  factory CustomerDetails.fromJson(Map<String?, dynamic>? json) =>
       CustomerDetails(
-        salutation: json["salutation"] ?? "",
-        name: json["name"]?.toString(),
-        panNo: json["panNo"] ?? "",
-        dob: json["dob"] == null
+        salutation: json?["salutation"] ?? "",
+        name: json?["name"]?.toString(),
+        panNo: json?["panNo"] ?? "",
+        dob: json?["dob"] == null
             ? null
-            : DateTime.tryParse(json["dob"]?.toString() ?? ''),
-        occupation: json["occupation"]?.toString(),
-        address: json["address"]?.toString(),
-        taluka: json["taluka"]?.toString(),
-        district: json["district"]?.toString(),
-        pincode: json["pincode"]?.toString(),
-        mobile1: json["mobile1"]?.toString(),
-        mobile2: json["mobile2"]?.toString(),
-        aadharNumber: json["aadharNumber"]?.toString(),
-        nomineeName: json["nomineeName"]?.toString(),
-        nomineeRelation: json["nomineeRelation"]?.toString(),
-        nomineeAge: _parseInt(json["nomineeAge"]),
+            : DateTime.tryParse(json?["dob"]?.toString() ?? ''),
+        occupation: json?["occupation"]?.toString(),
+        address: json?["address"]?.toString(),
+        taluka: json?["taluka"]?.toString(),
+        district: json?["district"]?.toString(),
+        pincode: json?["pincode"]?.toString(),
+        mobile1: json?["mobile1"]?.toString(),
+        mobile2: json?["mobile2"]?.toString(),
+        aadharNumber: json?["aadharNumber"]?.toString(),
+        nomineeName: json?["nomineeName"]?.toString(),
+        nomineeRelation: json?["nomineeRelation"]?.toString(),
+        nomineeAge: _parseInt(json?["nomineeAge"]),
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "salutation": salutation,
     "name": name,
     "panNo": panNo,
@@ -711,18 +742,18 @@ class Discount {
     this.approvedBy,
   });
 
-  factory Discount.fromJson(Map<String, dynamic> json) => Discount(
-    amount: _parseInt(json["amount"]),
-    type: json["type"]?.toString(),
-    approvalStatus: json["approvalStatus"]?.toString(),
-    approvalNote: json["approvalNote"]?.toString(),
-    appliedOn: json["appliedOn"] == null
+  factory Discount.fromJson(Map<String?, dynamic>? json) => Discount(
+    amount: _parseInt(json?["amount"]),
+    type: json?["type"]?.toString(),
+    approvalStatus: json?["approvalStatus"]?.toString(),
+    approvalNote: json?["approvalNote"]?.toString(),
+    appliedOn: json?["appliedOn"] == null
         ? null
-        : DateTime.tryParse(json["appliedOn"]?.toString() ?? ''),
-    approvedBy: json["approvedBy"]?.toString(),
+        : DateTime.tryParse(json?["appliedOn"]?.toString() ?? ''),
+    approvedBy: json?["approvedBy"]?.toString(),
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "amount": amount,
     "type": type,
     "approvalStatus": approvalStatus,
@@ -743,17 +774,33 @@ class Discount {
 class DocumentStatus {
   FinanceLetter kyc;
   FinanceLetter financeLetter;
+  FinanceLetter? dealForm; // Added this field
+  FinanceLetter? deliveryChallan; // Added this field
 
-  DocumentStatus({required this.kyc, required this.financeLetter});
+  DocumentStatus({
+    required this.kyc,
+    required this.financeLetter,
+    this.dealForm,
+    this.deliveryChallan,
+  });
 
-  factory DocumentStatus.fromJson(Map<String, dynamic> json) => DocumentStatus(
-    kyc: FinanceLetter.fromJson(json["kyc"]),
-    financeLetter: FinanceLetter.fromJson(json["financeLetter"]),
-  );
+  factory DocumentStatus.fromJson(Map<String?, dynamic>? json) =>
+      DocumentStatus(
+        kyc: FinanceLetter.fromJson(json?["kyc"]),
+        financeLetter: FinanceLetter.fromJson(json?["financeLetter"]),
+        dealForm: json?["dealForm"] == null
+            ? null
+            : FinanceLetter.fromJson(json?["dealForm"]),
+        deliveryChallan: json?["deliveryChallan"] == null
+            ? null
+            : FinanceLetter.fromJson(json?["deliveryChallan"]),
+      );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "kyc": kyc.toJson(),
     "financeLetter": financeLetter.toJson(),
+    "dealForm": dealForm?.toJson(),
+    "deliveryChallan": deliveryChallan?.toJson(),
   };
 }
 
@@ -765,21 +812,21 @@ class FinanceLetter {
 
   FinanceLetter({
     required this.status,
-    required this.verifiedBy,
-    required this.verificationNote,
-    required this.updatedAt,
+    this.verifiedBy,
+    this.verificationNote,
+    this.updatedAt,
   });
 
-  factory FinanceLetter.fromJson(Map<String, dynamic> json) => FinanceLetter(
-    status: json["status"] ?? "APPROVED",
-    verifiedBy: json["verifiedBy"]?.toString(),
-    verificationNote: json["verificationNote"]?.toString(),
-    updatedAt: json["updatedAt"] == null
+  factory FinanceLetter.fromJson(Map<String?, dynamic>? json) => FinanceLetter(
+    status: json?["status"]?.toString() ?? "APPROVED", // Added null check
+    verifiedBy: json?["verifiedBy"]?.toString(),
+    verificationNote: json?["verificationNote"]?.toString(),
+    updatedAt: json?["updatedAt"] == null
         ? null
-        : DateTime.tryParse(json["updatedAt"]?.toString() ?? ''),
+        : DateTime.tryParse(json?["updatedAt"]?.toString() ?? ''),
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "status": status,
     "verifiedBy": verifiedBy,
     "verificationNote": verificationNote,
@@ -804,17 +851,19 @@ class ExchangeDetails {
     required this.status,
   });
 
-  factory ExchangeDetails.fromJson(Map<String, dynamic> json) =>
+  factory ExchangeDetails.fromJson(Map<String?, dynamic>? json) =>
       ExchangeDetails(
-        broker: json["broker"] == null ? null : Broker.fromJson(json["broker"]),
-        price: _parseInt(json["price"]),
-        vehicleNumber: json["vehicleNumber"] ?? "",
-        chassisNumber: json["chassisNumber"] ?? "",
-        otpVerified: json["otpVerified"],
-        status: json["status"] ?? "PENDING",
+        broker: json?["broker"] == null
+            ? null
+            : Broker.fromJson(json?["broker"]),
+        price: _parseInt(json?["price"]),
+        vehicleNumber: json?["vehicleNumber"] ?? "",
+        chassisNumber: json?["chassisNumber"] ?? "",
+        otpVerified: json?["otpVerified"],
+        status: json?["status"] ?? "PENDING",
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "broker": broker?.toJson(),
     "price": price,
     "vehicleNumber": vehicleNumber,
@@ -839,20 +888,24 @@ class Broker {
 
   Broker({required this.id, required this.name, required this.mobile});
 
-  factory Broker.fromJson(Map<String, dynamic> json) => Broker(
-    id: json["_id"]?.toString(),
-    name: json["name"]?.toString(),
-    mobile: json["mobile"]?.toString(),
+  factory Broker.fromJson(Map<String?, dynamic>? json) => Broker(
+    id: json?["_id"]?.toString(),
+    name: json?["name"]?.toString(),
+    mobile: json?["mobile"]?.toString(),
   );
 
-  Map<String, dynamic> toJson() => {"_id": id, "name": name, "mobile": mobile};
+  Map<String?, dynamic>? toJson() => {
+    "_id": id,
+    "name": name,
+    "mobile": mobile,
+  };
 }
 
 class Model {
-  String id;
-  String modelName;
-  String type;
-  String status;
+  String? id;
+  String? modelName;
+  String? type;
+  String? status;
   List<Price> prices;
   List<String> colors;
   DateTime? createdAt;
@@ -871,27 +924,27 @@ class Model {
     this.updatedAt,
   });
 
-  factory Model.fromJson(Map<String, dynamic> json) => Model(
-    id: json["_id"] ?? "",
-    modelName: json["model_name"] ?? "",
-    type: json["type"] ?? "",
-    status: json["status"] ?? "",
-    prices: json["prices"] == null
+  factory Model.fromJson(Map<String?, dynamic>? json) => Model(
+    id: json?["_id"] ?? "",
+    modelName: json?["model_name"] ?? "",
+    type: json?["type"] ?? "",
+    status: json?["status"] ?? "",
+    prices: json?["prices"] == null
         ? []
-        : List<Price>.from(json["prices"].map((x) => Price.fromJson(x))),
-    colors: json["colors"] == null
+        : List<Price>.from(json?["prices"].map((x) => Price.fromJson(x))),
+    colors: json?["colors"] == null
         ? []
-        : List<String>.from(json["colors"].map((x) => x.toString())),
-    createdAt: json["createdAt"] == null
+        : List<String>.from(json?["colors"].map((x) => x.toString())),
+    createdAt: json?["createdAt"] == null
         ? null
-        : DateTime.tryParse(json["createdAt"]?.toString() ?? ''),
-    modelDiscount: _parseInt(json["model_discount"]),
-    updatedAt: json["updated_at"] == null
+        : DateTime.tryParse(json?["createdAt"]?.toString() ?? ''),
+    modelDiscount: _parseInt(json?["model_discount"]),
+    updatedAt: json?["updated_at"] == null
         ? null
-        : DateTime.tryParse(json["updated_at"]?.toString() ?? ''),
+        : DateTime.tryParse(json?["updated_at"]?.toString() ?? ''),
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "_id": id,
     "model_name": modelName,
     "type": type,
@@ -929,20 +982,20 @@ class Price {
     this.createdAt,
   });
 
-  factory Price.fromJson(Map<String, dynamic> json) => Price(
-    subdealerId: json["subdealer_id"]?.toString(),
-    value: _parseInt(json["value"]),
-    headerId: json["header_id"] ?? "",
-    branchId: json["branch_id"]?.toString(),
-    updatedAt: json["updated_at"] == null
+  factory Price.fromJson(Map<String?, dynamic>? json) => Price(
+    subdealerId: json?["subdealer_id"]?.toString(),
+    value: _parseInt(json?["value"]),
+    headerId: json?["header_id"] ?? "",
+    branchId: json?["branch_id"]?.toString(),
+    updatedAt: json?["updated_at"] == null
         ? null
-        : DateTime.tryParse(json["updated_at"]?.toString() ?? ''),
-    createdAt: json["created_at"] == null
+        : DateTime.tryParse(json?["updated_at"]?.toString() ?? ''),
+    createdAt: json?["created_at"] == null
         ? null
-        : DateTime.tryParse(json["created_at"]?.toString() ?? ''),
+        : DateTime.tryParse(json?["created_at"]?.toString() ?? ''),
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "subdealer_id": subdealerId,
     "value": value,
     "header_id": headerId,
@@ -977,18 +1030,18 @@ class Payment {
     this.gcAmount,
   });
 
-  factory Payment.fromJson(Map<String, dynamic> json) => Payment(
-    type: json["type"] ?? "CASH",
-    financer: json["financer"] == null
+  factory Payment.fromJson(Map<String?, dynamic>? json) => Payment(
+    type: json?["type"] ?? "CASH",
+    financer: json?["financer"] == null
         ? null
-        : Color.fromJson(json["financer"]),
-    scheme: json["scheme"]?.toString(),
-    emiPlan: json["emiPlan"]?.toString(),
-    gcApplicable: json["gcApplicable"],
-    gcAmount: _parseInt(json["gcAmount"]),
+        : Color.fromJson(json?["financer"]),
+    scheme: json?["scheme"]?.toString(),
+    emiPlan: json?["emiPlan"]?.toString(),
+    gcApplicable: json?["gcApplicable"],
+    gcAmount: _parseInt(json?["gcAmount"]),
   );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "type": type,
     "financer": financer?.toJson(),
     "scheme": scheme,
@@ -1021,15 +1074,16 @@ class PriceComponent {
     required this.isMandatory,
   });
 
-  factory PriceComponent.fromJson(Map<String, dynamic> json) => PriceComponent(
-    header: json["header"] ?? "",
-    originalValue: _parseInt(json["originalValue"]),
-    discountedValue: _parseDouble(json["discountedValue"]),
-    isDiscountable: json["isDiscountable"],
-    isMandatory: json["isMandatory"],
-  );
+  factory PriceComponent.fromJson(Map<String?, dynamic>? json) =>
+      PriceComponent(
+        header: json?["header"] ?? "",
+        originalValue: _parseInt(json?["originalValue"]),
+        discountedValue: _parseDouble(json?["discountedValue"]),
+        isDiscountable: json?["isDiscountable"],
+        isMandatory: json?["isMandatory"],
+      );
 
-  Map<String, dynamic> toJson() => {
+  Map<String?, dynamic>? toJson() => {
     "header": header,
     "originalValue": originalValue,
     "discountedValue": discountedValue,

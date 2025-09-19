@@ -20,8 +20,6 @@ class UpdateBookingStatusService {
   }
 
   Future<String?> updateBookingStatus(BuildContext context, String? id) async {
-    print(id);
-    print("entered");
     try {
       final dio = await getDioInstance();
       final response = await dio.put('bookings/$id/approve');

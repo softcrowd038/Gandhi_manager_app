@@ -29,7 +29,6 @@ class InwardedVehicleService {
       final response = await dio.get('vehicles/branch/$branchId');
 
       if (response.statusCode == 200) {
-        print(response.data);
         return InwardModelDetails.fromJson(response.data);
       }
       ScaffoldMessenger.of(context).showSnackBar(

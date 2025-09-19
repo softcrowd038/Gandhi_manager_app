@@ -1,7 +1,6 @@
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: unnecessary_null_comparison, use_build_context_synchronously
 
 import 'package:gandhi_tvs/common/app_imports.dart' hide Price;
-import 'package:gandhi_tvs/pages/edit_discount_page_booking.dart';
 import 'package:provider/provider.dart';
 import 'package:gandhi_tvs/models/model_headers.dart';
 
@@ -97,7 +96,7 @@ class _EditAccessoriesDetailsBookingState
           // Select accessories that were in the booking
           if (accessoriesProvider.accessoriesModel?.data?.accessories != null) {
             for (var accessory
-                in accessoriesProvider.accessoriesModel!.data!.accessories!) {
+                in accessoriesProvider.accessoriesModel!.data!.accessories) {
               if (_preSelectedAccessoryIds.contains(accessory.id)) {
                 selectedAccessoriesProvider.toggleAccessory(
                   accessory.name ?? "",
@@ -112,7 +111,6 @@ class _EditAccessoriesDetailsBookingState
         });
       }
     } catch (e) {
-      print('Error fetching booking data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load accessories data: $e'),

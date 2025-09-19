@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/services/send_broker_otp.dart';
 
 class BrokerOtpVerifyProvider extends ChangeNotifier {
   bool _isLoading = false;

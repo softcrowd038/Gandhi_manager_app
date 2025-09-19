@@ -21,6 +21,7 @@ class FinanceLetterProvider extends ChangeNotifier {
     BuildContext context,
     FinanceLetterModel financeLetterModel,
     String? bookingId,
+    bool isIndexThree,
   ) async {
     _isLoading = true;
     notifyListeners();
@@ -30,6 +31,7 @@ class FinanceLetterProvider extends ChangeNotifier {
       context,
       financeLetterModel,
       bookingId,
+      isIndexThree,
     );
 
     _isLoading = false;

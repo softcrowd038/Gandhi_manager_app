@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
 

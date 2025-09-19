@@ -1,6 +1,5 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/pending_update_model.dart';
-import 'package:gandhi_tvs/services/get_pending_requests.dart';
 
 class GetPendingRequestsProvider with ChangeNotifier {
   PendingUpdateModel? _pendingRequests;

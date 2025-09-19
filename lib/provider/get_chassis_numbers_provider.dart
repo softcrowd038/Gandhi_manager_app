@@ -1,6 +1,5 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/get_chassis_numbers.dart';
-import 'package:gandhi_tvs/services/get_chassis_numbers_service.dart';
 
 class GetChassisNumbersProvider with ChangeNotifier {
   GetChassisNumberModel? _chassisNumberModel;

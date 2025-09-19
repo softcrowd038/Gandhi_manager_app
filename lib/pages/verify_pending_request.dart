@@ -1,7 +1,4 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/provider/get_pending_request_provider.dart';
-import 'package:gandhi_tvs/provider/verify_kyc_document_provider.dart';
-import 'package:gandhi_tvs/provider/verify_updated_request.dart';
 import 'package:provider/provider.dart';
 
 class VerifyPendingRequest extends StatefulWidget {

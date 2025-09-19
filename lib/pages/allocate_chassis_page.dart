@@ -1,11 +1,7 @@
-import 'dart:math';
+// ignore_for_file: use_build_context_synchronously
 
-import 'package:file_picker/file_picker.dart';
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
-import 'package:gandhi_tvs/models/allocate_chassis_model.dart';
-import 'package:gandhi_tvs/provider/allocate_chassis_number_provider.dart';
-import 'package:gandhi_tvs/provider/get_chassis_numbers_provider.dart';
 import 'package:provider/provider.dart';
 
 class AllocateChassisPage extends HookWidget {
@@ -17,6 +13,7 @@ class AllocateChassisPage extends HookWidget {
   Widget build(BuildContext context) {
     final chassisNumberController = useTextEditingController();
     final hasClaim = useState<bool>(false);
+    final hasDeviation = useState<bool>(false);
     final priceClaimController = useTextEditingController();
     final descriptionController = useTextEditingController();
     final documents = useState<List<PlatformFile>>([]);
@@ -37,14 +34,13 @@ class AllocateChassisPage extends HookWidget {
         );
         getChassisProvider.fetchChassisNumbers(
           context,
-          booking.model.id,
-          booking.color.id,
+          booking.model.id ?? "",
+          booking.color.id ?? "",
         );
       });
       return null;
     }, []);
 
-    // Function to pick multiple documents
     Future<void> pickDocuments() async {
       try {
         FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -137,6 +133,7 @@ class AllocateChassisPage extends HookWidget {
         final chassisAllocationModel = ChassisAllocationModel(
           chassisNumber: chassisNumberController.text,
           hasClaim: hasClaim.value,
+          hasDeviation: hasDeviation.value ? 'Yes' : 'No',
           priceClaim: hasClaim.value
               ? double.parse(priceClaimController.text)
               : null,
@@ -177,7 +174,7 @@ class AllocateChassisPage extends HookWidget {
                 CustomerHeader(
                   customerName:
                       "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
-                  address: booking.model.modelName,
+                  address: booking.model.modelName ?? "",
                   bookingId: booking.bookingNumber ?? "",
                 ),
                 const Divider(),
@@ -222,6 +219,16 @@ class AllocateChassisPage extends HookWidget {
                     },
                   ),
                 ),
+                booking.payment.type == "CASH"
+                    ? SwitchListTile(
+                        title: const Text("Is Any Deviation For this booking?"),
+                        value: hasDeviation.value,
+                        onChanged: (val) {
+                          hasDeviation.value = val;
+                        },
+                        activeColor: Theme.of(context).primaryColor,
+                      )
+                    : SizedBox.shrink(),
 
                 SwitchListTile(
                   title: const Text("Is Any Claim ?"),
@@ -358,7 +365,7 @@ class AllocateChassisPage extends HookWidget {
                               ),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),

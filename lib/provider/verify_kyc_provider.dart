@@ -1,6 +1,5 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/get_kyc_model.dart';
-import 'package:gandhi_tvs/services/verify_kyc_service.dart';
 
 class VerifyKycProvider extends ChangeNotifier {
   GetKycModel? _getKycModel;

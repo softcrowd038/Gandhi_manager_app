@@ -1,14 +1,14 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/provider/verify_kyc_document_provider.dart';
-import 'package:gandhi_tvs/provider/verify_kyc_provider.dart';
-import 'package:gandhi_tvs/widgets/full_screen_image_View.dart';
-import 'package:gandhi_tvs/widgets/image_shimmer.dart';
-import 'package:gandhi_tvs/widgets/kyc_card.dart';
 import 'package:provider/provider.dart';
 
 class VerifyKycPage extends StatefulWidget {
   final String? bookingId;
-  const VerifyKycPage({super.key, required this.bookingId});
+  final bool isIndexThree;
+  const VerifyKycPage({
+    super.key,
+    required this.bookingId,
+    required this.isIndexThree,
+  });
 
   @override
   State<VerifyKycPage> createState() => _VerifyKycPageState();
@@ -46,18 +46,34 @@ class _VerifyKycPageState extends State<VerifyKycPage> {
     ].where((doc) => doc["file"] != null).toList(growable: false);
   }
 
-  void _openFullScreenImage(
+  bool _isPdfFile(String url) {
+    return url.toLowerCase().endsWith('.pdf');
+  }
+
+  void _openFullScreenDocument(
     BuildContext context,
-    String imageUrl,
+    String documentUrl,
     String title,
   ) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            FullScreenImagePage(imageUrl: imageUrl, title: title),
-      ),
-    );
+    if (_isPdfFile(documentUrl)) {
+      // Open PDF viewer
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              PdfViewerScreen(pdfUrl: documentUrl, title: title),
+        ),
+      );
+    } else {
+      // Open image viewer
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              FullScreenImagePage(imageUrl: documentUrl, title: title),
+        ),
+      );
+    }
   }
 
   @override
@@ -120,6 +136,7 @@ class _VerifyKycPageState extends State<VerifyKycPage> {
                             context,
                             provider.kycModel?.data.bookingDetails.bookingId,
                             "APPROVED",
+                            widget.isIndexThree,
                           );
                         },
                         child: Container(
@@ -155,6 +172,7 @@ class _VerifyKycPageState extends State<VerifyKycPage> {
                             context,
                             provider.kycModel?.data.bookingDetails.bookingId,
                             "REJECTED",
+                            widget.isIndexThree,
                           );
                         },
                         child: Container(
@@ -194,14 +212,16 @@ class _VerifyKycPageState extends State<VerifyKycPage> {
                       itemCount: documents.length,
                       itemBuilder: (context, index) {
                         final document = documents[index];
-                        final imageUrl = "$baseImageUrl${document["file"]}";
+                        final documentUrl = "$baseImageUrl${document["file"]}";
+                        final isPdf = _isPdfFile(documentUrl);
 
                         return KycGridItem(
                           title: document["title"] as String,
-                          imageUrl: imageUrl,
-                          onTap: () => _openFullScreenImage(
+                          imageUrl: isPdf ? null : documentUrl,
+                          isPdf: isPdf,
+                          onTap: () => _openFullScreenDocument(
                             context,
-                            imageUrl,
+                            documentUrl,
                             document["title"] as String,
                           ),
                         );

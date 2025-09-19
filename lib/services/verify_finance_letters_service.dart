@@ -23,10 +23,8 @@ class VerifyFinanceDocumentsService {
     BuildContext context,
     String? id,
     String? status,
+    bool isIndexThree,
   ) async {
-    print(id);
-    print("entered");
-
     try {
       final dio = await getDioInstance();
 
@@ -38,7 +36,9 @@ class VerifyFinanceDocumentsService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => NavigationPage(index: 3)),
+          MaterialPageRoute(
+            builder: (context) => NavigationPage(index: isIndexThree ? 3 : 4),
+          ),
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -47,7 +47,6 @@ class VerifyFinanceDocumentsService {
         );
         return response.data; // Return response data
       } else {
-        print(response.statusCode);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -59,7 +58,6 @@ class VerifyFinanceDocumentsService {
       }
     } catch (e) {
       String errorMessage = "Something went wrong";
-      print(e);
 
       if (e is DioException) {
         if (e.response != null && e.response?.data != null) {

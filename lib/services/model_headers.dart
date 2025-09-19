@@ -7,6 +7,7 @@ class ModelHeadersService {
   Future<Dio> getDioInstance() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     final token = sharedPreferences.getString('token');
+    final branchId = sharedPreferences.getString('branch');
 
     return Dio(
       BaseOptions(
@@ -16,6 +17,7 @@ class ModelHeadersService {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
+        queryParameters: {'branch_id': branchId},
       ),
     );
   }
@@ -26,7 +28,7 @@ class ModelHeadersService {
   ) async {
     try {
       final dio = await getDioInstance();
-      final response = await dio.get('models/$modelId');
+      final response = await dio.get('models/$modelId/with-prices');
 
       if (response.statusCode == 200) {
         return ModelHeaders.fromJson(response.data);

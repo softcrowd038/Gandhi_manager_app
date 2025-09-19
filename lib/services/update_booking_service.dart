@@ -24,9 +24,6 @@ class UpdateBookingService {
     String? id,
     BookingFormModel? bookingFormModel,
   ) async {
-    print(id);
-    print("entered");
-
     try {
       final dio = await getDioInstance();
 
@@ -42,9 +39,8 @@ class UpdateBookingService {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Booking updated successfully")),
         );
-        return response.data; // Return response data
+        return response.data;
       } else {
-        print(response.statusCode);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Failed to update booking: ${response.statusCode}"),
@@ -54,7 +50,6 @@ class UpdateBookingService {
       }
     } catch (e) {
       String errorMessage = "Something went wrong";
-      print(e);
 
       if (e is DioException) {
         if (e.response != null && e.response?.data != null) {

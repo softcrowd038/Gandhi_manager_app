@@ -1,3 +1,5 @@
+// ignore_for_file: empty_catches
+
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +25,6 @@ class _DateSelectorState extends State<DateSelector> {
         _selectedDate = DateFormat('yyyy-MM-dd').parse(widget.birthDayDate!);
         _hasInitialDate = true;
       } catch (e) {
-        print('Error parsing initial date: $e');
         _hasInitialDate = false;
       }
     }
@@ -40,9 +41,7 @@ class _DateSelectorState extends State<DateSelector> {
           _selectedDate = DateFormat('yyyy-MM-dd').parse(widget.birthDayDate!);
           _hasInitialDate = true;
         });
-      } catch (e) {
-        print('Error parsing updated date: $e');
-      }
+      } catch (e) {}
     }
   }
 

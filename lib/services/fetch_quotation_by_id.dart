@@ -26,16 +26,14 @@ class QuotationServiceByID {
   ) async {
     try {
       final dio = await getDioInstance();
-      final response = await dio.get('quotations/$quotationId');
+      final response = await dio.get('quotations/byId/$quotationId');
 
       if (response.statusCode == 200) {
         return QuotationResponse.fromJson(response.data);
       } else {
-        // handleErrorResponse(response.statusCode, context);
         throw Exception('Failed to load quotation');
       }
     } on DioError catch (e) {
-      // handleErrorResponse(e.response?.statusCode, context);
       throw Exception('Error: ${e.message}');
     } catch (e) {
       String errorMessage = "Something went wrong";

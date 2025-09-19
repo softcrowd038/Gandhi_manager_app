@@ -1,7 +1,5 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
-import 'package:gandhi_tvs/models/downpayment_model.dart';
-import 'package:gandhi_tvs/provider/downpayment_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddDownpaymentPage extends HookWidget {
@@ -14,6 +12,8 @@ class AddDownpaymentPage extends HookWidget {
     final financeDisbursmentController = useTextEditingController();
     final downpaymentController = useTextEditingController();
     final dealAmountController = useTextEditingController();
+    final gcAmountController = useTextEditingController();
+    final exchangeController = useTextEditingController();
     final deviationController = useTextEditingController();
     final globalKey = useMemoized(() => GlobalKey<FormState>());
     final downPaymentProvider = Provider.of<DownpaymentProvider>(
@@ -28,8 +28,13 @@ class AddDownpaymentPage extends HookWidget {
       final dealAmount = double.tryParse(dealAmountController.text) ?? 0;
       final financeAmt =
           double.tryParse(financeDisbursmentController.text) ?? 0;
+      final gcAmount = double.tryParse(gcAmountController.text) ?? 0;
+      final exchangeAmount = double.parse(
+        booking.exchangeDetails?.price.toString() ?? "0",
+      );
 
-      final downpayment = dealAmount - financeAmt;
+      final downpayment = (dealAmount - financeAmt - exchangeAmount) + gcAmount;
+
       downpaymentController.text = downpayment.toString();
 
       // Update provider with calculated values
@@ -88,7 +93,7 @@ class AddDownpaymentPage extends HookWidget {
           isDeviation: isConfirmed.value,
         );
 
-        downPaymentProvider.postDownpayment(context, downpaymentModel);
+        downPaymentProvider.postDownpayment(context, downpaymentModel, booking);
       } catch (e) {
         ScaffoldMessenger.of(
           context,
@@ -100,6 +105,10 @@ class AddDownpaymentPage extends HookWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         dealAmountController.text = (booking.discountedAmount?.toDouble() ?? 0)
             .toString();
+        gcAmountController.text = (booking.payment.gcAmount?.toDouble() ?? 0)
+            .toString();
+        exchangeController.text =
+            (booking.exchangeDetails?.price?.toDouble() ?? 0).toString();
         downPaymentProvider.setBookingId(booking.id ?? "");
       });
 
@@ -139,7 +148,7 @@ class AddDownpaymentPage extends HookWidget {
                     CustomerHeader(
                       customerName:
                           "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
-                      address: booking.model.modelName,
+                      address: booking.model.modelName ?? "",
                       bookingId: booking.bookingNumber ?? "",
                     ),
                     const Divider(),
@@ -160,11 +169,48 @@ class AddDownpaymentPage extends HookWidget {
                         obscureText: false,
                         keyboardType: TextInputType.number,
                         readOnly: true,
-                        onChanged: (String) {},
+                        onChanged: (string) {},
                       ),
                     ),
 
-                    /// Finance Disbursement Amount
+                    booking.exchange == true
+                        ? Padding(
+                            padding: AppPadding.p2,
+                            child: OutlinedBorderTextfieldWidget(
+                              label: "Exchange Price",
+                              hintText: "xxxx",
+                              suffixIcon: Icons.currency_rupee,
+                              suffixIconColor: Colors.grey,
+                              controller: exchangeController,
+                              validator: (value) =>
+                                  validateNumber(value, 'Exchange Price'),
+
+                              obscureText: false,
+                              keyboardType: TextInputType.number,
+                              readOnly: true,
+                              onChanged: (string) {},
+                            ),
+                          )
+                        : SizedBox.shrink(),
+
+                    Padding(
+                      padding: AppPadding.p2,
+                      child: OutlinedBorderTextfieldWidget(
+                        label: "GC Amount",
+                        hintText: "xxxx",
+                        suffixIcon: Icons.currency_rupee,
+                        suffixIconColor: Colors.grey,
+                        controller: gcAmountController,
+                        validator: (value) =>
+                            validateNumber(value, 'GC Amount'),
+
+                        obscureText: false,
+                        keyboardType: TextInputType.number,
+                        readOnly: true,
+                        onChanged: (string) {},
+                      ),
+                    ),
+
                     Padding(
                       padding: AppPadding.p2,
                       child: OutlinedBorderTextfieldWidget(
@@ -204,7 +250,7 @@ class AddDownpaymentPage extends HookWidget {
                         readOnly: true,
                         onChanged:
                             (
-                              String,
+                              string,
                             ) {}, // Make it read-only since it's calculated
                       ),
                     ),
@@ -235,7 +281,7 @@ class AddDownpaymentPage extends HookWidget {
                           obscureText: false,
                           keyboardType: TextInputType.number,
                           readOnly: true,
-                          onChanged: (String) {},
+                          onChanged: (string) {},
                         ),
                       ),
 

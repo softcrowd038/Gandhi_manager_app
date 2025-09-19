@@ -40,7 +40,6 @@ class BookingService {
         );
         return response.data;
       } else {
-        print(response.statusCode);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Failed to post booking: ${response.statusCode}"),
@@ -50,7 +49,6 @@ class BookingService {
       }
     } catch (e) {
       String errorMessage = "Something went wrong";
-      print(e);
 
       if (e is DioException) {
         if (e.response != null && e.response?.data != null) {

@@ -25,11 +25,12 @@ class QuotationService {
     try {
       final response = await getDioInstance();
 
+      quotation.selectedModels.map((element) {});
+
       final responseData = await response.post(
         'quotations',
         data: quotation.toJson(),
       );
-
       if (responseData.statusCode == 200 &&
           responseData.data['status'] != 'error') {
         return responseData.data;

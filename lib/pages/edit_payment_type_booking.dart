@@ -1,5 +1,6 @@
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
+
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/pages/edit_accesories_details_booking.dart';
 import 'package:provider/provider.dart';
 
 class EditPaymentTypeBooking extends StatefulWidget {
@@ -25,7 +26,6 @@ class _PaymentTypeBookingState extends State<EditPaymentTypeBooking> {
   String? selectedGCApplicable;
   String? selectedFinancer;
   bool _isLoading = false;
-  bool _isInitialDataLoaded = false;
 
   @override
   void initState() {
@@ -71,7 +71,6 @@ class _PaymentTypeBookingState extends State<EditPaymentTypeBooking> {
         setState(() {
           selectedPaymentType = bookingData.payment?.type;
           paymentTypeController.text = bookingData.payment?.type ?? "FINANCE";
-          print(paymentTypeController.text);
           selectedFinancer = bookingData.payment?.financer?.id;
           selectedGCApplicable = bookingData.payment?.gcApplicable == true
               ? "Yes"
@@ -99,12 +98,9 @@ class _PaymentTypeBookingState extends State<EditPaymentTypeBooking> {
         );
         bookingFormProvider.setGcAmount(bookingData.payment?.gcAmount ?? 0);
 
-        setState(() {
-          _isInitialDataLoaded = true;
-        });
+        setState(() {});
       }
     } catch (e) {
-      print('Error fetching booking data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load payment data: $e'),

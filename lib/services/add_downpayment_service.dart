@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/models/downpayment_model.dart';
 
 class AddDownpaymentService {
   Future<Dio> getDioInstance() async {
@@ -27,7 +26,6 @@ class AddDownpaymentService {
     try {
       final dio = await getDioInstance();
 
-      // Debug print to verify all required fields
       print('Booking ID: ${downPaymentModel.bookingId}');
       print('Disbursement Amount: ${downPaymentModel.disbursementAmount}');
       print('DownPayment Expected: ${downPaymentModel.downPaymentExpected}');
@@ -36,10 +34,7 @@ class AddDownpaymentService {
       final response = await dio.post(
         'disbursements',
         data: downPaymentModel.toJson(),
-        options: Options(
-          validateStatus: (status) =>
-              status! < 500, // Don't throw for 400 errors
-        ),
+        options: Options(validateStatus: (status) => status! < 500),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -52,7 +47,6 @@ class AddDownpaymentService {
         );
         return response.data;
       } else {
-        // Handle 400 errors specifically
         final errorData = response.data;
         String errorMessage = "Failed to post Downpayment details";
 

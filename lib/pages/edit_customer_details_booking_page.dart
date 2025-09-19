@@ -1,5 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/pages/edit_exchange_mode_booking.dart';
 import 'package:provider/provider.dart';
 
 class EditCustomerDetailsBookingPage extends StatefulWidget {
@@ -34,7 +35,6 @@ class _CustomerDetailsBookingPageState
   String? selectedOccupation;
   String? fetchedBirthdate;
   bool _isLoading = false;
-  bool _isInitialDataLoaded = false;
 
   @override
   void initState() {
@@ -139,12 +139,9 @@ class _CustomerDetailsBookingPageState
           bookingData.customerDetails?.panNo ?? "",
         );
 
-        setState(() {
-          _isInitialDataLoaded = true;
-        });
+        setState(() {});
       }
     } catch (e) {
-      print('Error fetching booking data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load booking data: $e'),

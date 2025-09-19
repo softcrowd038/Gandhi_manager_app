@@ -40,6 +40,16 @@ class _SelectModelPageState extends State<SelectModelPage> {
   }
 
   void toggleSelection(Model model) {
+    // Check if model has a valid ID
+    if (model.id == null || model.id!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cannot select a model without a valid ID'),
+        ),
+      );
+      return;
+    }
+
     final selectedModelsProvider = Provider.of<SelectedModelsProvider>(
       context,
       listen: false,

@@ -100,7 +100,7 @@ class BookingFormModel {
       "gstin": gstin,
       "rto_type": rtoType,
       "branch": branch,
-      "rtoAmount": rtoAmount,
+      "rto_amount": rtoAmount,
       "sales_executive": salesExecutive,
       "optionalComponents": optionalComponents,
       "customer_details": {

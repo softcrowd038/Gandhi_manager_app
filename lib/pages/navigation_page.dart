@@ -1,6 +1,5 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/pages/approved_bookings_page.dart';
 import 'package:provider/provider.dart';
 
 class NavigationPage extends HookWidget {
@@ -20,32 +19,28 @@ class NavigationPage extends HookWidget {
         await context.read<UserDetailsProvider>().fetchUserDetails(context);
         isLoading.value = false;
       });
+
       return null;
     }, const []);
 
     final username = userDetailsProvider.userDetails?.data?.name ?? 'User';
 
-    // Using ternary for pages list
     final pages = isLoading.value
         ? [MyHomePage()]
         : [
-                MyHomePage(),
-                ActivityPage(isActivePage: true),
-                BikeModelsDetails(),
-                AllBookingsPage(),
-                // Ternary instead of if condition
-                (userDetailsProvider.userDetails?.data?.roles.any(
-                          (role) => role.name == "MANAGER",
-                        ) ??
-                        false)
-                    ? ApprovedBookingsPage()
-                    : null,
-              ]
-              .where((page) => page != null)
-              .cast<Widget>()
-              .toList(); // Filter out nulls
+            MyHomePage(),
+            ActivityPage(isActivePage: true),
+            BikeModelsDetails(),
+            AllBookingsPage(),
+            ApprovedBookingsPage(),
 
-    // Using ternary for navItems list
+            // (userDetailsProvider.userDetails?.data?.roles.any(
+            //           (role) => role.name == "MANAGER",
+            //         ) ??
+            //         false)
+            //     ? ApprovedBookingsPage()
+            //     : null,
+          ].where((page) => page != null).cast<Widget>().toList();
     final navItems = isLoading.value
         ? [
             BottomNavigationBarItem(
@@ -77,19 +72,23 @@ class NavigationPage extends HookWidget {
                   label: "Bookings",
                 ),
                 // Ternary instead of if condition
-                (userDetailsProvider.userDetails?.data?.roles.any(
-                          (role) => role.name == "MANAGER",
-                        ) ??
-                        false)
-                    ? BottomNavigationBarItem(
-                        icon: Icon(Icons.verified),
-                        label: "Allocate",
-                      )
-                    : null,
+                // (userDetailsProvider.userDetails?.data?.roles.any(
+                //           (role) => role.name == "MANAGER",
+                //         ) ??
+                //         false)
+                //     ? BottomNavigationBarItem(
+                //         icon: Icon(Icons.verified),
+                //         label: "Allocate",
+                //       )
+                //     : null,
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.verified),
+                  label: "Allocate",
+                ),
               ]
               .where((item) => item != null)
               .cast<BottomNavigationBarItem>()
-              .toList(); // Filter out nulls
+              .toList();
 
     void onItemTapped(int index) {
       if (index < pages.length) {

@@ -7,6 +7,8 @@ class BikeModelService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
 
+   
+
     return Dio(
       BaseOptions(
         baseUrl: baseUrl,

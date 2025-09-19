@@ -14,11 +14,17 @@ class ModelHeaders {
   ModelHeaders({required this.status, required this.data});
 
   factory ModelHeaders.fromJson(Map<String?, dynamic>? json) => ModelHeaders(
-    status: json?["status"],
+    status: _parseString(json?["status"]),
     data: json?["data"] != null ? Data.fromJson(json?["data"]) : null,
   );
 
   Map<String?, dynamic>? toJson() => {"status": status, "data": data?.toJson()};
+
+  static String? _parseString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
 }
 
 class Data {
@@ -49,13 +55,15 @@ class Model {
   });
 
   factory Model.fromJson(Map<String?, dynamic>? json) => Model(
-    id: json?["_id"],
-    modelName: json?["model_name"],
-    prices: List<Price>.from(
-      (json?["prices"] ?? []).map((x) => Price.fromJson(x)),
-    ),
+    id: _parseString(json?["_id"]),
+    modelName: _parseString(json?["model_name"]),
+    prices: json?["prices"] != null && json?["prices"] is List
+        ? List<Price>.from(
+            (json?["prices"] as List).map((x) => Price.fromJson(x)),
+          )
+        : [],
     createdAt: json?["createdAt"] != null
-        ? DateTime.parse(json!["createdAt"])
+        ? DateTime.tryParse(json!["createdAt"].toString())
         : null,
   );
 
@@ -65,6 +73,12 @@ class Model {
     "prices": List<dynamic>.from(prices.map((x) => x.toJson())),
     "createdAt": createdAt?.toIso8601String(),
   };
+
+  static String? _parseString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
 }
 
 class Price {
@@ -95,19 +109,19 @@ class Price {
   });
 
   factory Price.fromJson(Map<String?, dynamic>? json) => Price(
-    value: json?["value"],
-    headerId: json?["header_id"],
-    headerKey: json?["header_key"],
+    value: _parseInt(json?["value"]),
+    headerId: _parseString(json?["header_id"]),
+    headerKey: _parseString(json?["header_key"]),
     categoryKey: categoryKeyValues.map?[json?["category_key"]],
-    priority: json?["priority"],
-    isMandatory: json?["is_mandatory"],
-    isDiscount: json?["is_discount"],
+    priority: _parseInt(json?["priority"]),
+    isMandatory: _parseBool(json?["is_mandatory"]),
+    isDiscount: _parseBool(json?["is_discount"]),
     metadata: json?["metadata"] != null
         ? Metadata.fromJson(json?["metadata"])
         : null,
-    branchId: branchIdValues.map?[json?["branch_id"]],
-    branchName: branchNameValues.map?[json?["branch_name"]],
-    branchCity: branchCityValues.map?[json?["branch_city"]],
+    branchId: branchIdValues.map?[_parseString(json?["branch_id"])],
+    branchName: branchNameValues.map?[_parseString(json?["branch_name"])],
+    branchCity: branchCityValues.map?[_parseString(json?["branch_city"])],
   );
 
   Map<String?, dynamic>? toJson() => {
@@ -123,6 +137,31 @@ class Price {
     "branch_name": branchNameValues.reverse?[branchName],
     "branch_city": branchCityValues.reverse?[branchCity],
   };
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  static String? _parseString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
+
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is int) return value != 0;
+    if (value is double) return value != 0.0;
+    if (value is String) {
+      return value.toLowerCase() == 'true' || value == '1';
+    }
+    return false;
+  }
 }
 
 enum BranchCity { PUNE }
@@ -159,8 +198,8 @@ class Metadata {
   });
 
   factory Metadata.fromJson(Map<String?, dynamic>? json) => Metadata(
-    pageNo: int.tryParse(json?["page_no"]?.toString() ?? ""),
-    hsnCode: int.tryParse(json?["hsn_code"]?.toString() ?? ""),
+    pageNo: _parseInt(json?["page_no"]),
+    hsnCode: _parseInt(json?["hsn_code"]),
     gstRate: json?["gst_rate"],
   );
 
@@ -169,6 +208,14 @@ class Metadata {
     "hsn_code": hsnCode,
     "gst_rate": gstRate,
   };
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
 }
 
 class EnumValues<T> {

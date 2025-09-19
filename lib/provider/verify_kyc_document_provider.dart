@@ -1,5 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/services/verify_kyc_documents_service.dart';
 
 class VerifyKycDocumentProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -12,6 +13,7 @@ class VerifyKycDocumentProvider extends ChangeNotifier {
     BuildContext context,
     String? id,
     String? status,
+    bool isIndexThree,
   ) async {
     _isLoading = true;
     notifyListeners();
@@ -21,6 +23,7 @@ class VerifyKycDocumentProvider extends ChangeNotifier {
       context,
       id,
       status,
+      isIndexThree,
     );
 
     _isLoading = false;

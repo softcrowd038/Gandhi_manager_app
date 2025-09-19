@@ -21,6 +21,7 @@ class KYCProvider extends ChangeNotifier {
     BuildContext context,
     KYCModel kycModel,
     String? bookingId,
+    bool isIndexThree,
   ) async {
     _isLoading = true;
     notifyListeners();
@@ -30,6 +31,7 @@ class KYCProvider extends ChangeNotifier {
       context,
       kycModel,
       bookingId,
+      isIndexThree,
     );
 
     _isLoading = false;

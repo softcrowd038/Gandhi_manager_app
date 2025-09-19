@@ -58,7 +58,7 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
             mobile2: mobile2Controller.text,
           ),
           selectedModels: selectedModelsProvider.selectedModels
-              .map((model) => SelectedModel(modelId: model.modelId ?? ""))
+              .map((model) => SelectedModel(modelId: model.id ?? ""))
               .toList(),
           expectedDeliveryDate: expectedDate!,
           financeNeeded: financeNeeded,
@@ -66,8 +66,7 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
       );
 
       if (response['status'] == 'success') {
-        final quotationId =
-            response['data']['quotation_id'] ?? response['data']['id'];
+        final quotationId = response['data']['_id'] ?? response['data']['id'];
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -130,9 +129,10 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: AppFontWeight.w600,
-                    fontSize: AppFontSize.s18,
+                    fontSize: AppFontSize.s16,
                   ),
                 ),
+                const SizedBox(height: 16),
                 CustomTextFieldOutlined(
                   label: 'Customer Name',
                   hintText: 'Enter customer name',
@@ -146,9 +146,10 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                     }
                     return null;
                   },
-                  keyboardType: TextInputType.text,
                   onChanged: (value) {},
+                  keyboardType: TextInputType.text,
                 ),
+                const SizedBox(height: 16),
                 CustomTextFieldOutlined(
                   label: 'Address',
                   hintText: 'Enter address',
@@ -162,9 +163,10 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                     }
                     return null;
                   },
-                  keyboardType: TextInputType.text,
                   onChanged: (value) {},
+                  keyboardType: TextInputType.text,
                 ),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
@@ -185,7 +187,7 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                         keyboardType: TextInputType.text,
                       ),
                     ),
-                    SizedBox(width: AppDimensions.width2),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: CustomTextFieldOutlined(
                         label: 'District',
@@ -206,9 +208,10 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
                 CustomTextFieldOutlined(
-                  label: 'Mobile Number 1',
-                  hintText: 'Enter mobile number',
+                  label: 'Whats\'s app number',
+                  hintText: 'Enter Whats\'s app number',
                   suffixIcon: Icons.phone,
                   suffixIconColor: Colors.black54,
                   obscureText: false,
@@ -222,8 +225,9 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                   onChanged: (value) {},
                   keyboardType: TextInputType.number,
                 ),
+                const SizedBox(height: 16),
                 CustomTextFieldOutlined(
-                  label: 'Mobile Number 2',
+                  label: 'Mobile Number',
                   hintText: 'Enter alternate mobile number',
                   suffixIcon: Icons.phone_android,
                   suffixIconColor: Colors.black54,
@@ -240,13 +244,14 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                   onChanged: (value) {},
                   keyboardType: TextInputType.number,
                 ),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Finance Needed?',
                       style: TextStyle(
-                        fontSize: height * 0.018,
+                        fontSize: height * 0.016,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -261,10 +266,11 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
                 Text(
                   'Expected Date',
                   style: TextStyle(
-                    fontSize: height * 0.018,
+                    fontSize: height * 0.016,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -285,9 +291,9 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                   },
                   child: Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(
-                      vertical: AppDimensions.height2,
-                      horizontal: AppDimensions.width2,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 12,
                     ),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black45),
@@ -306,7 +312,7 @@ class _RegisterCustomerPageState extends State<RegisterCustomerPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: AppDimensions.height4),
+                const SizedBox(height: 16),
                 !isLoading
                     ? GestureDetector(
                         onTap: () => _submitForm(),

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
 
 class VerifyPendingRequest {
@@ -27,7 +29,6 @@ class VerifyPendingRequest {
       final response = await dio.post(
         'bookings/$bookingId/${status == "APPROVED" ? "approve-update" : "reject-update"}',
       );
-      print(response.statusCode);
       handleErrorResponse(response.statusCode, context);
 
       return response.data;

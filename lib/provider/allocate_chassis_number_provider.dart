@@ -1,6 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/models/allocate_chassis_model.dart';
-import 'package:gandhi_tvs/services/allocate_chassis_service.dart';
 
 class AllocateChassisProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -43,7 +43,7 @@ class AllocateChassisProvider extends ChangeNotifier {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => NavigationPage(index: 3)),
+        MaterialPageRoute(builder: (context) => NavigationPage(index: 4)),
       );
     } else {
       _errorMessage = "Failed to allocate chassis";

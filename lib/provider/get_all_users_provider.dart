@@ -1,6 +1,5 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_users_model.dart';
-import 'package:gandhi_tvs/services/get_all_users_service.dart';
 
 class GetAllUsersProvider extends ChangeNotifier {
   AllUsersModel? _allUsersModel;

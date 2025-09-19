@@ -41,8 +41,9 @@ Future<Uint8List?> fetchPdfBytes(
     final tempDir = await getTemporaryDirectory();
     final filePath = '${tempDir.path}/temp_quotation.pdf';
 
+    print('$baseImageUrl/${data.data.pdfUrl}');
     await dio.download(
-      '$baseImageUrl/public${data.data.pdfUrl}',
+      '$baseImageUrl/${data.data.pdfUrl}',
       filePath,
       options: Options(
         receiveTimeout: const Duration(seconds: 30),

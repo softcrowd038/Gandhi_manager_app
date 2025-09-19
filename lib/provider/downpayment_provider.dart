@@ -1,8 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/models/downpayment_model.dart';
-import 'package:gandhi_tvs/services/add_downpayment_service.dart';
+import 'package:gandhi_tvs/models/all_bookings_model.dart';
 
 class DownpaymentProvider with ChangeNotifier {
   String _bookingId = "";
@@ -37,8 +36,11 @@ class DownpaymentProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void postDownpayment(BuildContext context, DownpaymentModel model) async {
-    // Verify all required fields are set
+  void postDownpayment(
+    BuildContext context,
+    DownpaymentModel model,
+    Booking booking,
+  ) async {
     if (model.bookingId.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -61,6 +63,14 @@ class DownpaymentProvider with ChangeNotifier {
     }
 
     final service = AddDownpaymentService();
-    await service.postAddDownPaymentModel(context, model);
+    await service.postAddDownPaymentModel(context, model).then((_) {
+      handlePrintFinanceLetter(
+        bookingData: booking,
+        dealAmount: booking.discountedAmount?.toDouble() ?? 0.0,
+        financeDisbursement: model.disbursementAmount,
+        gcAmount: booking.payment.gcAmount?.toDouble() ?? 0.0,
+        downPayment: model.downPaymentExpected,
+      );
+    });
   }
 }

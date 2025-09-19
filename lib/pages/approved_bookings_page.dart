@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use, unrelated_type_equality_checks
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
-import 'package:gandhi_tvs/widgets/booking_status_container.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -48,7 +47,15 @@ class _BookingsTab extends HookWidget {
   Widget build(BuildContext context) {
     final searchController = useTextEditingController();
     final filteredBookings = useState<List<Booking>>([]);
-    final allBookingsProvider = Provider.of<AllBookingsProvider>(context);
+    final allBookingsProvider = Provider.of<AllBookingsProvider>(
+      context,
+      listen: false,
+    );
+    final financeLetterProvider = Provider.of<FinanceLetterProvider>(
+      context,
+      listen: false,
+    );
+
     final isLoading = useState<bool>(false);
 
     useEffect(() {
@@ -65,6 +72,7 @@ class _BookingsTab extends HookWidget {
       final bookings =
           allBookingsProvider.allBookingsModel?.data.bookings ?? [];
       filteredBookings.value = bookings;
+
       return null;
     }, [allBookingsProvider.allBookingsModel?.data.bookings]);
 
@@ -75,15 +83,22 @@ class _BookingsTab extends HookWidget {
       if (query.isEmpty) {
         filteredBookings.value = allBookings;
       } else {
-        filteredBookings.value = allBookings
-            .where(
-              (booking) =>
-                  booking.customerDetails.name?.toLowerCase().contains(
-                    query.toLowerCase(),
-                  ) ??
-                  false,
-            )
-            .toList();
+        final queryLower = query.toLowerCase();
+
+        filteredBookings.value = allBookings.where((booking) {
+          return booking.customerDetails.mobile1?.toLowerCase().contains(
+                    queryLower,
+                  ) ==
+                  true ||
+              booking.bookingNumber?.toLowerCase().contains(queryLower) ==
+                  true ||
+              booking.chassisNumber?.toLowerCase().contains(queryLower) ==
+                  true ||
+              booking.customerDetails.name?.toLowerCase().contains(
+                    queryLower,
+                  ) ==
+                  true;
+        }).toList();
       }
     }
 
@@ -93,7 +108,7 @@ class _BookingsTab extends HookWidget {
         SearchField(
           controller: searchController,
           onChanged: filterBookings,
-          labelText: "Search $tabName bookings by name",
+          labelText: "Search $tabName bookings",
         ),
         Expanded(
           child: isLoading.value
@@ -111,7 +126,11 @@ class _BookingsTab extends HookWidget {
                     ),
                   ),
                 )
-              : _BookingsList(bookings: filteredBookings.value, status: status),
+              : _BookingsList(
+                  bookings: filteredBookings.value,
+                  status: status,
+                  financeLetterProvider: financeLetterProvider,
+                ),
         ),
       ],
     );
@@ -121,8 +140,13 @@ class _BookingsTab extends HookWidget {
 class _BookingsList extends StatelessWidget {
   final List<Booking> bookings;
   final String status;
+  final FinanceLetterProvider financeLetterProvider;
 
-  const _BookingsList({required this.bookings, required this.status});
+  const _BookingsList({
+    required this.bookings,
+    required this.status,
+    required this.financeLetterProvider,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +154,10 @@ class _BookingsList extends StatelessWidget {
       itemCount: bookings.length,
       itemBuilder: (context, index) {
         final booking = bookings[index];
-        return _BookingListItem(booking: booking);
+        return _BookingListItem(
+          booking: booking,
+          financeLetterProvider: financeLetterProvider,
+        );
       },
     );
   }
@@ -138,8 +165,12 @@ class _BookingsList extends StatelessWidget {
 
 class _BookingListItem extends StatelessWidget {
   final Booking booking;
+  final FinanceLetterProvider financeLetterProvider;
 
-  const _BookingListItem({required this.booking});
+  const _BookingListItem({
+    required this.booking,
+    required this.financeLetterProvider,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +190,7 @@ class _BookingListItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              booking.model.modelName,
+              booking.model.modelName ?? "",
               style: TextStyle(fontSize: AppFontSize.s16),
             ),
             LableWithIcon(
@@ -202,7 +233,11 @@ class _BookingListItem extends StatelessWidget {
           ],
         ),
         leading: UserIconContainer(),
-        trailing: CustomPopUpMenuButton(booking: booking),
+        trailing: CustomPopUpMenuButton(
+          booking: booking,
+          financeLetterProvider: financeLetterProvider,
+          downPaymentStatus: booking.financeLetterStatus,
+        ),
       ),
     );
   }

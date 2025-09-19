@@ -19,7 +19,7 @@ class InwardModelStatusContainer extends StatelessWidget {
       child: Padding(
         padding: AppPadding.p1,
         child: Text(
-          label ?? "",
+          getStatusLable(status1) ?? "N/A",
           style: TextStyle(
             color: getStatusLableColor(status1),
             fontWeight: FontWeight.w600,

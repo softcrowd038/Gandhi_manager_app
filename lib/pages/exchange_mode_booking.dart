@@ -43,6 +43,7 @@ class _ExchangeModeBookingState extends State<ExchangeModeBooking> {
         context,
         listen: false,
       );
+      brokerOtpVerifyProvider.reset();
       _onClicked = brokerOtpVerifyProvider.onClicked;
     });
   }

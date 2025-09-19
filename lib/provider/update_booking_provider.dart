@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/services/update_booking_service.dart';
 
 class UpdateBookingProvider extends ChangeNotifier {
   bool _isLoading = false;

@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/pages/edit_model_details_booking.dart';
 import 'package:provider/provider.dart';
 
 class EditSelectBookingModelPage extends StatefulWidget {

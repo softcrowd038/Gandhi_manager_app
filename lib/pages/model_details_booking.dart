@@ -1,7 +1,6 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, use_build_context_synchronously
 
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/provider/get_all_users_provider.dart';
 import 'package:provider/provider.dart';
 
 class ModelDetailsBooking extends StatefulWidget {
@@ -37,8 +36,6 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
       roleName = roleFromPrefs;
     });
 
-    print("roleName: $roleName");
-
     if (roleName == "MANAGER") {
       final usersProvider = Provider.of<GetAllUsersProvider>(
         context,
@@ -56,6 +53,7 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
         context,
         listen: false,
       );
+
       getUserBranch();
       final modelId = selectedModelsProvider.selectedModels.first.id;
       final colorsProvider = Provider.of<ColorsProvider>(
@@ -63,7 +61,6 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
         listen: false,
       );
       colorsProvider.fetchBikeModelsColor(context, modelId ?? "");
-      print(roleName);
 
       final usersProvider = roleName == "MANAGER"
           ? Provider.of<GetAllUsersProvider>(context, listen: false)
@@ -268,15 +265,13 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
                                     (role) => role.name == 'SALES_EXECUTIVE',
                                   );
                                   final isUserActive = user.status == "ACTIVE";
-                                  final isUActive = user.isActive == true;
 
                                   final isBranchAssociated =
                                       user.branch == branch;
                                   return isActive &&
                                       hasSalesExecutiveRole &&
                                       isBranchAssociated &&
-                                      isUserActive &&
-                                      isUActive;
+                                      isUserActive;
                                 })
                                 .toList();
 
@@ -311,7 +306,6 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
                               label: "Sales executive",
                               icon: Icons.person,
                               onSelected: (String? value) {
-                                print(value);
                                 bookingFormProvider.setSalesExecuative(
                                   value ?? "",
                                 );
@@ -352,6 +346,12 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
                         final prices =
                             modelHeader.modelHeaders?.data?.model.prices ?? [];
                         WidgetsBinding.instance.addPostFrameCallback((_) {
+                          final selectedHeadersProvider =
+                              Provider.of<SelectedModelHeadersProvider>(
+                                context,
+                                listen: false,
+                              );
+                          selectedHeadersProvider.clearSelections();
                           if (selectedAccessories.length != prices.length) {
                             setState(() {
                               selectedAccessories = List<bool>.filled(
@@ -366,7 +366,6 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
                             child: Text('No facilities available'),
                           );
                         }
-
                         return ListView.builder(
                           shrinkWrap: true,
                           itemCount: prices.length,

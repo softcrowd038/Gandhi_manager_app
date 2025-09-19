@@ -1,8 +1,5 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
-import 'package:gandhi_tvs/models/allocate_chassis_model.dart';
-import 'package:gandhi_tvs/provider/allocate_chassis_number_provider.dart';
-import 'package:gandhi_tvs/provider/get_chassis_numbers_provider.dart';
 import 'package:provider/provider.dart';
 
 class UpdateChassisPage extends HookWidget {
@@ -31,8 +28,8 @@ class UpdateChassisPage extends HookWidget {
         );
         getChassisProvider.fetchChassisNumbers(
           context,
-          booking.model.id,
-          booking.color.id,
+          booking.model.id ?? "",
+          booking.color.id ?? "",
         );
 
         chassisNumberController.text = booking.chassisNumber ?? "";
@@ -110,7 +107,7 @@ class UpdateChassisPage extends HookWidget {
                 CustomerHeader(
                   customerName:
                       "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
-                  address: booking.model.modelName,
+                  address: booking.model.modelName ?? "",
                   bookingId: booking.bookingNumber ?? "",
                 ),
                 const Divider(),

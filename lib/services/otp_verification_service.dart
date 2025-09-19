@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
+
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:provider/provider.dart';
 
@@ -36,10 +38,9 @@ class OtpVerificationService {
       final responseData = response.data;
 
       if (response.statusCode == 200 && responseData['success'] != false) {
-        // Safe handling of potentially null values
         final token = responseData['token']?.toString();
         final userId = responseData['user']?['id']?.toString();
-        final branch = responseData['user']?['branch']?.toString();
+        final branch = responseData['user']?['branch']['_id']?.toString();
 
         if (token != null) {
           prefs.setString('token', token);

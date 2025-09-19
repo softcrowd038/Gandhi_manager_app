@@ -17,7 +17,6 @@ class BikeModelsDetails extends HookWidget {
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         userDetails.fetchUserDetails(context);
-        print(userDetails.userDetails?.data?.branch);
         await inwardProvider.getInwardedModelProvider(
           context,
           userDetails.userDetails?.data?.branch ?? "",

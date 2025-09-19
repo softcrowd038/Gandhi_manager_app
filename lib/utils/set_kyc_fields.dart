@@ -31,7 +31,6 @@ void setKYCField(KYCProvider kycProvider, int index, String value) {
 
       break;
     default:
-      print("No KYC field matched for ${documents[index]}");
       break;
   }
 }

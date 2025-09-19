@@ -1,5 +1,5 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/provider/update_booking_status.dart';
+
 
 Color? getStatusColor(String? status1) {
   if (status1 == 'Status.NOT_APPROVED') {
@@ -34,6 +34,24 @@ Color? getStatusLableColor(String? status1) {
     return Colors.deepOrange;
   } else {
     return Colors.grey;
+  }
+}
+
+String? getStatusLable(String? status1) {
+  if (status1 == 'Status.NOT_APPROVED') {
+    return "Not Approved";
+  } else if (status1 == 'Status.IN_STOCK') {
+    return "in Stock";
+  } else if (status1 == 'Status.IN_TRANSIT') {
+    return "in Transit";
+  } else if (status1 == 'Status.SOLD') {
+    return "Sold";
+  } else if (status1 == 'Status.SERVICE') {
+    return "Service";
+  } else if (status1 == 'Status.DAMAGED') {
+    return "Damage";
+  } else {
+    return "N / A";
   }
 }
 
@@ -102,7 +120,7 @@ String getButtonLabel(String? status, UpdateBookingStatusProvider provider) {
     case 'KYC_VERIFIED':
       return 'KYC VERIFIED';
     case 'PENDING_APPROVAL (Discount_Exceeded)':
-      return 'APPROVE BOOKING (Discount Exceeded)';
+      return 'APPROVE BOOKING';
     default:
       return status ?? 'UNKNOWN STATUS';
   }
@@ -131,7 +149,7 @@ Color getButtonColor(String? status, UpdateBookingStatusProvider provider) {
     case 'KYC_VERIFIED':
       return Colors.lightGreen;
     case 'PENDING_APPROVAL (Discount_Exceeded)':
-      return Colors.deepOrange;
+      return AppColors.primary;
     default:
       return Colors.grey;
   }
@@ -207,7 +225,7 @@ String getContainerLabelText(String? status) {
     case 'KYC_VERIFIED':
       return 'KYC VERIFIED';
     case 'PENDING_APPROVAL (Discount_Exceeded)':
-      return 'APPROVE BOOKING (Discount Exceeded)';
+      return 'Discount Exceeded';
     default:
       return status ?? 'UNKNOWN STATUS';
   }

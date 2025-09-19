@@ -1,9 +1,7 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print
+// ignore_for_file: use_build_context_synchronously, avoid_print, deprecated_member_use
 
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/get_booking_by_id.dart';
-import 'package:gandhi_tvs/pages/edit_customer_details_booking_page.dart';
-import 'package:gandhi_tvs/provider/get_all_users_provider.dart';
 import 'package:provider/provider.dart';
 
 class EditModelDetailsBooking extends StatefulWidget {
@@ -29,7 +27,6 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
   String? selectedSalesExecuative;
   String? branch;
   String? roleName;
-  bool _isInitialDataLoaded = false;
   bool _isLoading = false;
   List<String> _selectedAccessoryIds = [];
 
@@ -130,9 +127,7 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
 
         _setSelectedAccessories(bookingData.accessories);
 
-        setState(() {
-          _isInitialDataLoaded = true;
-        });
+        setState(() {});
       }
     } catch (e) {
       print('Error fetching booking data: $e');
@@ -196,10 +191,6 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
       listen: false,
     );
     bookingFormProvider.setAccessories(_selectedAccessoryIds);
-  }
-
-  bool _isAccessorySelected(String accessoryId) {
-    return _selectedAccessoryIds.contains(accessoryId);
   }
 
   @override

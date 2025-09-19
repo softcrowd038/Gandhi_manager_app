@@ -40,7 +40,6 @@ class GetUserDetails {
       }
 
       final response = await dio.get('/auth/me');
-      print(response.statusCode);
       handleErrorResponse(response.statusCode, context);
 
       prefs.setString('branch', response.data['data']['branch']);
@@ -54,7 +53,6 @@ class GetUserDetails {
 
         final String roleId = firstRole['_id'] ?? '';
         final String roleName = firstRole['name'] ?? '';
-        print(roleName);
 
         if (roleId.isNotEmpty) {
           prefs.setString('role_id', roleId);
@@ -106,7 +104,7 @@ class GetUserDetails {
         errorMessage = e.toString();
       }
 
-      debugPrint('Error: $errorMessage');
+      debugPrint('debug Error: $errorMessage');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
       );

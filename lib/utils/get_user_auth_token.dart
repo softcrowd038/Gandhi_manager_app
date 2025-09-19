@@ -24,7 +24,6 @@ Future<void> removeAuthToken(BuildContext context) async {
 }
 
 void handleErrorResponse(int? statusCode, BuildContext context) {
-  print(statusCode);
   if (statusCode == 401 ||
       statusCode == 404 ||
       statusCode == 500 ||

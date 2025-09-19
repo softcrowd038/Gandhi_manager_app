@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/models/allocate_chassis_model.dart';
 
 class AllocateChassisService {
   Future<Dio> getDioInstance() async {

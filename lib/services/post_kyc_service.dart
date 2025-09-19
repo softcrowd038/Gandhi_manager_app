@@ -23,7 +23,9 @@ class PostKycService {
     BuildContext context,
     KYCModel kycModel,
     String? bookingId,
+    bool isIndexThree,
   ) async {
+    print(isIndexThree);
     try {
       final dio = await getDioInstance();
 
@@ -41,7 +43,9 @@ class PostKycService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => NavigationPage(index: 3)),
+          MaterialPageRoute(
+            builder: (context) => NavigationPage(index: isIndexThree ? 3 : 4),
+          ),
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("KYC documents posted successfully")),

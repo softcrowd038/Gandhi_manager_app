@@ -1,5 +1,6 @@
+// ignore_for_file: unused_field, use_build_context_synchronously, avoid_print
+
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/pages/edit_payment_type_booking.dart';
 import 'package:provider/provider.dart';
 
 class EditExchangeModeBooking extends StatefulWidget {
@@ -24,7 +25,6 @@ class _ExchangeModeBookingState extends State<EditExchangeModeBooking> {
 
   String? selectedExchangeMode;
   String? selectedExchangeBroker;
-  bool _onClicked = false;
   bool? _isRequired;
   bool? _otpVerified;
   bool _isLoading = false;
@@ -43,11 +43,7 @@ class _ExchangeModeBookingState extends State<EditExchangeModeBooking> {
         context,
         listen: false,
       ).fetchExchangeBroker(context, branchId ?? "");
-      final brokerOtpVerifyProvider = Provider.of<BrokerOtpVerifyProvider>(
-        context,
-        listen: false,
-      );
-      _onClicked = brokerOtpVerifyProvider.onClicked;
+      Provider.of<BrokerOtpVerifyProvider>(context, listen: false);
 
       // Fetch booking data if bookingId is provided
       if (widget.bookingId != null) {

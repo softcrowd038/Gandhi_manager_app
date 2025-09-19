@@ -1,6 +1,6 @@
 // update_booking_status_provider.dart
-import 'package:flutter/material.dart';
-import 'package:gandhi_tvs/services/update_booking_status.dart';
+
+import 'package:gandhi_tvs/common/app_imports.dart';
 
 class UpdateBookingStatusProvider extends ChangeNotifier {
   String? _status;
@@ -19,8 +19,6 @@ class UpdateBookingStatusProvider extends ChangeNotifier {
     _status = null;
     _responseData = null;
     notifyListeners();
-
-    print("entered");
 
     try {
       final updateBookingStatusService = UpdateBookingStatusService();

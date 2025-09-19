@@ -28,12 +28,10 @@ class FetchQuotationsByDay {
       if (response.statusCode == 200) {
         return QuotationsByDay.fromJson(response.data);
       } else {
-        print(response.statusCode);
         // handleErrorResponse(response.statusCode, context);
         throw Exception('Failed to load quotation');
       }
     } on DioError catch (e) {
-      print(e);
       // handleErrorResponse(e.response?.statusCode, context);
       throw Exception('Error: ${e.message}');
     } catch (e) {

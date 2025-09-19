@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use, unrelated_type_equality_checks
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
-import 'package:gandhi_tvs/widgets/custom_pop_up_menu_for_verification.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -81,15 +80,13 @@ class KYCandFinanceVerificationPage extends HookWidget {
                     itemBuilder: (context, index) {
                       final booking = filteredBookings.value[index];
 
-                      print(booking.status);
-
                       return ListTile(
                         title: CustomNameAndStatus(booking: booking),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              booking.model.modelName,
+                              booking.model.modelName ?? "",
                               style: TextStyle(fontSize: AppFontSize.s16),
                             ),
                             LableWithIcon(

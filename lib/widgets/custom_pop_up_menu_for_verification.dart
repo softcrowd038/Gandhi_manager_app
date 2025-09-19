@@ -1,9 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/all_bookings_model.dart';
-import 'package:gandhi_tvs/pages/add_downpayment_page.dart';
-import 'package:gandhi_tvs/pages/verify_finance_letter.dart';
-import 'package:gandhi_tvs/pages/verify_kyc_page.dart';
-import 'package:gandhi_tvs/pages/verify_pending_request.dart';
 import 'package:provider/provider.dart';
 
 class CustomPopUpMenuButtonForVerification extends StatefulWidget {
@@ -14,6 +12,7 @@ class CustomPopUpMenuButtonForVerification extends StatefulWidget {
     required this.status1,
     required this.status2,
     this.downPaymentStatus,
+    this.onBookingDeleted,
   });
 
   final Booking booking;
@@ -21,6 +20,7 @@ class CustomPopUpMenuButtonForVerification extends StatefulWidget {
   final String? status1;
   final String? status2;
   final String? downPaymentStatus;
+  final VoidCallback? onBookingDeleted;
 
   @override
   State<CustomPopUpMenuButtonForVerification> createState() =>
@@ -33,11 +33,13 @@ class _CustomPopUpMenuButtonForVerificationState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userDetailsProvider = Provider.of<UserDetailsProvider>(
-        context,
-        listen: false,
-      );
-      userDetailsProvider.fetchUserDetails(context);
+      if (mounted) {
+        final userDetailsProvider = Provider.of<UserDetailsProvider>(
+          context,
+          listen: false,
+        );
+        userDetailsProvider.fetchUserDetails(context);
+      }
     });
   }
 
@@ -98,24 +100,25 @@ class _CustomPopUpMenuButtonForVerificationState
     UserDetailsProvider userDetails,
   ) {
     if (widget.status1 == "NOT_UPLOADED") {
-      // Show upload dialog for finance letter
       showFinanceLetterDialog(
         context: context,
         customerName:
             "${widget.booking.customerDetails.salutation} ${widget.booking.customerDetails.name}",
         financeLetterProvider: widget.financeLetterProvider,
         bookingId: widget.booking.id ?? "",
+        isIndexThree: true,
       );
     } else if (userDetails.userDetails?.data?.roles.any(
           (role) => role.name == "MANAGER",
         ) ??
         true) {
-      // Navigate to view page for other statuses
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              VerifyFinanceLetter(bookingId: widget.booking.id),
+          builder: (context) => VerifyFinanceLetter(
+            bookingId: widget.booking.id,
+            isIndexThree: true,
+          ),
         ),
       );
     }
@@ -123,7 +126,6 @@ class _CustomPopUpMenuButtonForVerificationState
 
   void _handleKycAction(BuildContext context, UserDetailsProvider userDetails) {
     if (widget.status2 == "NOT_UPLOADED") {
-      // Navigate to KYC upload page
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -132,6 +134,7 @@ class _CustomPopUpMenuButtonForVerificationState
             bookingId: widget.booking.id ?? "",
             customerName:
                 "${widget.booking.customerDetails.salutation} ${widget.booking.customerDetails.name}",
+            isIndexThree: true,
           ),
         ),
       );
@@ -139,11 +142,11 @@ class _CustomPopUpMenuButtonForVerificationState
           (role) => role.name == "MANAGER",
         ) ??
         true) {
-      // Navigate to KYC view page for other statuses
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => VerifyKycPage(bookingId: widget.booking.id),
+          builder: (context) =>
+              VerifyKycPage(bookingId: widget.booking.id, isIndexThree: true),
         ),
       );
     }
@@ -152,7 +155,7 @@ class _CustomPopUpMenuButtonForVerificationState
   String _getDownPaymentLabel() {
     switch (widget.downPaymentStatus) {
       case "PENDING":
-        return "Uploaded Downpayment";
+        return "Added Downpayment";
       case "APPROVED":
         return "Approved Downpayment";
       case "NOT_UPLOADED":
@@ -182,10 +185,70 @@ class _CustomPopUpMenuButtonForVerificationState
   bool _isPendingRequestEnabled() =>
       widget.booking.updateRequestStatus == "PENDING";
 
+  bool _isDeleteEnabled() {
+    return widget.booking.status == "PENDING_APPROVAL" ||
+        widget.booking.status == "PENDING_APPROVAL (Discount_Exceeded)";
+  }
+
+  void _handleDeleteBooking(BuildContext context) {
+    final deleteProvider = Provider.of<DeleteBookingProvider>(
+      context,
+      listen: false,
+    );
+
+    final BuildContext currentContext = context;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text(
+            'Are you sure you want to delete booking #${widget.booking.bookingId}? '
+            'This action cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+
+                showDialog(
+                  context: currentContext,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return Center(child: CircularProgressIndicator());
+                  },
+                );
+
+                bool success = await deleteProvider.deleteBookingById(
+                  currentContext,
+                  widget.booking.id,
+                );
+
+                Navigator.pop(currentContext);
+
+                if (success) {
+                  if (widget.onBookingDeleted != null) {
+                    widget.onBookingDeleted!();
+                  }
+                }
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserDetailsProvider>(
-      builder: (context, userDetails, _) {
+    return Consumer2<UserDetailsProvider, DeleteBookingProvider>(
+      builder: (context, userDetails, deleteProvider, _) {
         return PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert),
           color: Colors.white,
@@ -212,12 +275,13 @@ class _CustomPopUpMenuButtonForVerificationState
                       VerifyPendingRequest(bookingId: widget.booking.bookingId),
                 ),
               );
+            } else if (value == 'Delete Booking') {
+              _handleDeleteBooking(context);
             }
           },
           itemBuilder: (BuildContext context) {
             final menuItems = <PopupMenuEntry<String>>[];
 
-            // Finance Letter Item
             if (widget.booking.payment.type == "FINANCE") {
               menuItems.add(
                 PopupMenuItem<String>(
@@ -234,7 +298,6 @@ class _CustomPopUpMenuButtonForVerificationState
               }
             }
 
-            // KYC Item
             menuItems.add(
               PopupMenuItem<String>(
                 value: _isKycEnabled() ? _getKycLabel() : null,
@@ -257,6 +320,7 @@ class _CustomPopUpMenuButtonForVerificationState
                 );
               }
             }
+
             if (widget.booking.updateRequestStatus == "PENDING") {
               if (userDetails.userDetails?.data?.roles.any(
                     (role) => role.name == "MANAGER",
@@ -273,6 +337,28 @@ class _CustomPopUpMenuButtonForVerificationState
                 );
               }
             }
+
+            if (_isDeleteEnabled()) {
+              menuItems.add(const PopupMenuDivider());
+              menuItems.add(
+                PopupMenuItem<String>(
+                  value: 'Delete Booking',
+
+                  enabled: _isDeleteEnabled() && !deleteProvider.isLoading,
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: Colors.red, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Delete Booking',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
             return menuItems;
           },
         );

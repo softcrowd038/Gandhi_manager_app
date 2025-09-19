@@ -23,10 +23,8 @@ class VerifyKycDocumentsService {
     BuildContext context,
     String? id,
     String? status,
+    bool isIndexThree,
   ) async {
-    print(id);
-    print("entered");
-
     try {
       final dio = await getDioInstance();
 
@@ -38,14 +36,15 @@ class VerifyKycDocumentsService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => NavigationPage(index: 3)),
+          MaterialPageRoute(
+            builder: (context) => NavigationPage(index: isIndexThree ? 3 : 4),
+          ),
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Kyc Verified successfully")),
         );
-        return response.data; // Return response data
+        return response.data;
       } else {
-        print(response.statusCode);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Failed to verify kyc: ${response.statusCode}"),
@@ -55,7 +54,6 @@ class VerifyKycDocumentsService {
       }
     } catch (e) {
       String errorMessage = "Something went wrong";
-      print(e);
 
       if (e is DioException) {
         if (e.response != null && e.response?.data != null) {

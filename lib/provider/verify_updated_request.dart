@@ -1,4 +1,6 @@
-import 'package:gandhi_tvs/common/app_imports.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:gandhi_tvs/common/app_imports.dart' hide VerifyPendingRequest;
 import 'package:gandhi_tvs/services/verify_pending_request.dart';
 
 class VerifyUpdatedRequestProvider extends ChangeNotifier {

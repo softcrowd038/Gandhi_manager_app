@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:gandhi_tvs/common/app_imports.dart';
 
 class FullScreenImagePage extends StatelessWidget {

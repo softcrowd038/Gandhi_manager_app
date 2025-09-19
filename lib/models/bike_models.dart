@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'package:gandhi_tvs/common/app_imports.dart';
 
 BikeModels bikeModelsFromJson(String str) =>
     BikeModels.fromJson(json.decode(str));
@@ -13,8 +13,8 @@ class BikeModels {
   BikeModels({this.status, this.results, this.data});
 
   factory BikeModels.fromJson(Map<String, dynamic> json) => BikeModels(
-    status: json["status"],
-    results: json["results"],
+    status: _parseString(json["status"]),
+    results: _parseInt(json["results"]),
     data: json["data"] != null ? Data.fromJson(json["data"]) : null,
   );
 
@@ -23,6 +23,20 @@ class BikeModels {
     "results": results,
     "data": data?.toJson(),
   };
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  static String? _parseString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
 }
 
 class Data {
@@ -31,7 +45,7 @@ class Data {
   Data({required this.models});
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    models: json["models"] != null
+    models: json["models"] != null && json["models"] is List
         ? List<Model>.from(json["models"].map((x) => Model.fromJson(x)))
         : [],
   );
@@ -59,16 +73,16 @@ class Model {
   });
 
   factory Model.fromJson(Map<String, dynamic> json) => Model(
-    id: json["_id"]?.toString(),
-    modelName: json["model_name"]?.toString(),
-    prices: json["prices"] != null
+    id: _parseString(json["_id"]),
+    modelName: _parseString(json["model_name"]),
+    prices: json["prices"] != null && json["prices"] is List
         ? List<Price>.from(json["prices"].map((x) => Price.fromJson(x)))
         : [],
     createdAt: json["createdAt"] != null
-        ? DateTime.tryParse(json["createdAt"])
+        ? DateTime.tryParse(json["createdAt"].toString())
         : null,
-    v: json["__v"],
-    modelId: json["id"]?.toString(),
+    v: _parseInt(json["__v"]),
+    modelId: _parseString(json["id"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -79,6 +93,20 @@ class Model {
     "__v": v,
     "id": modelId,
   };
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  static String? _parseString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
 }
 
 class Price {
@@ -87,8 +115,24 @@ class Price {
 
   Price({this.value, this.headerId});
 
-  factory Price.fromJson(Map<String, dynamic> json) =>
-      Price(value: json["value"], headerId: json["header_id"]?.toString());
+  factory Price.fromJson(Map<String, dynamic> json) => Price(
+    value: _parseInt(json["value"]),
+    headerId: _parseString(json["header_id"]),
+  );
 
   Map<String, dynamic> toJson() => {"value": value, "header_id": headerId};
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  static String? _parseString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
 }

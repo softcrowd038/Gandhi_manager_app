@@ -5,6 +5,7 @@ class ChassisAllocationModel {
   String? reason;
   final String chassisNumber;
   final bool hasClaim;
+  final String? hasDeviation;
   final double? priceClaim;
   final String? description;
   final List<XFile> documents;
@@ -13,6 +14,7 @@ class ChassisAllocationModel {
     this.id,
     this.reason,
     required this.chassisNumber,
+    this.hasDeviation,
     this.hasClaim = false,
     this.priceClaim,
     this.description,
@@ -24,6 +26,7 @@ class ChassisAllocationModel {
       'chassisNumber': chassisNumber,
       'reason': reason,
       'hasClaim': hasClaim.toString(),
+      'is_deviation': hasDeviation,
       if (priceClaim != null) 'priceClaim': priceClaim!.toString(),
       if (description != null && description!.isNotEmpty)
         'description': description,
@@ -45,6 +48,7 @@ class ChassisAllocationModel {
       'reason': reason,
       'chassisNumber': chassisNumber,
       'hasClaim': hasClaim,
+      'is_deviation': hasDeviation,
       'priceClaim': priceClaim,
       'description': description,
       'documents': documents.map((file) => file.path).toList(),
@@ -56,6 +60,7 @@ class ChassisAllocationModel {
     String? reason,
     String? chassisNumber,
     bool? hasClaim,
+    String? hasDeviation,
     double? priceClaim,
     String? description,
     List<XFile>? documents,
@@ -65,6 +70,7 @@ class ChassisAllocationModel {
       reason: reason ?? this.reason,
       chassisNumber: chassisNumber ?? this.chassisNumber,
       hasClaim: hasClaim ?? this.hasClaim,
+      hasDeviation: hasDeviation ?? this.hasDeviation,
       priceClaim: priceClaim ?? this.priceClaim,
       description: description ?? this.description,
       documents: documents ?? this.documents,

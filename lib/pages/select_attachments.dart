@@ -1,7 +1,8 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+// ignore_for_file: avoid_print, deprecated_member_use, use_build_context_synchronously
+
 import 'package:gandhi_tvs/common/app_imports.dart';
-import 'package:gandhi_tvs/models/quotation_model.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class SelectAttachments extends HookWidget {
   final String quotationId;
@@ -12,17 +13,113 @@ class SelectAttachments extends HookWidget {
   Widget build(BuildContext context) {
     final selectedAttachments = useState<List<String>>([]);
     final isSelectingMode = useState<bool>(false);
+    final whatsAppService = WhatsAppApiService();
+    final videoControllers = useState<Map<String, VideoPlayerController>>({});
+    final chewieControllers = useState<Map<String, ChewieController>>({});
+    final thumbnailCache = useState<Map<String, ImageProvider>>({});
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final attachments = Provider.of<QuotationProvider>(
+        Provider.of<QuotationProvider>(
           context,
           listen: false,
-        );
-        attachments.fetchQuotationById(quotationId, context);
+        ).fetchQuotationById(quotationId, context);
       });
-      return null;
+
+      return () {
+        for (var controller in videoControllers.value.values) {
+          controller.dispose();
+        }
+        for (var controller in chewieControllers.value.values) {
+          controller.dispose();
+        }
+      };
     }, []);
+
+    Future<File> downloadFile(String url, String filename) async {
+      final response = await http.get(Uri.parse(url));
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/$filename');
+      await file.writeAsBytes(response.bodyBytes);
+      return file;
+    }
+
+    Widget buildPdfPreview(String url) {
+      return FutureBuilder<File>(
+        future: downloadFile(
+          url,
+          'preview_${DateTime.now().millisecondsSinceEpoch}.pdf',
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            return PDFView(
+              filePath: snapshot.data!.path,
+              enableSwipe: true,
+              swipeHorizontal: false,
+              autoSpacing: false,
+              pageFling: false,
+              onError: (error) => print('PDF Error: $error'),
+              onPageError: (page, error) => print('Page $page Error: $error'),
+            );
+          } else if (snapshot.hasError) {
+            return const Center(child: Icon(Icons.error));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
+    }
+
+    Widget buildVideoPreview(String url) {
+      if (!thumbnailCache.value.containsKey(url)) {
+        thumbnailCache.value[url] = const AssetImage(
+          'assets/video_placeholder.png',
+        );
+      }
+
+      return Stack(
+        children: [
+          GestureDetector(
+            onTap: () {
+              if (!isSelectingMode.value) {
+                if (!videoControllers.value.containsKey(url)) {
+                  final controller = VideoPlayerController.network(
+                    url,
+                    formatHint: VideoFormat.other,
+                  );
+
+                  videoControllers.value[url] = controller;
+                  controller.initialize().then((_) {
+                    if (controller.value.isInitialized) {
+                      chewieControllers.value[url] = ChewieController(
+                        videoPlayerController: controller,
+                        autoPlay: false,
+                        looping: false,
+                        aspectRatio: controller.value.aspectRatio,
+                        showControls: true,
+                        materialProgressColors: ChewieProgressColors(
+                          playedColor: Colors.red,
+                          handleColor: Colors.red,
+                          backgroundColor: Colors.grey,
+                          bufferedColor: Colors.grey.withOpacity(0.5),
+                        ),
+                      );
+                    }
+                  });
+                }
+              }
+            },
+            child: videoControllers.value.containsKey(url)
+                ? Chewie(controller: chewieControllers.value[url]!)
+                : Image(
+                    image: thumbnailCache.value[url]!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Icon(Icons.videocam),
+                  ),
+          ),
+        ],
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -41,43 +138,29 @@ class SelectAttachments extends HookWidget {
         actions: [
           Consumer<QuotationProvider>(
             builder: (context, provider, child) {
-              AttachmentAttachment? videoAttachment;
-              AttachmentAttachment? youtubeAttachment;
-
-              try {
-                videoAttachment = provider.quotation?.data.attachments
-                    .expand((a) => a.attachments)
-                    .firstWhere((a) => a.type == 'video');
-              } catch (_) {
-                videoAttachment = null;
-              }
-
-              try {
-                youtubeAttachment = provider.quotation?.data.attachments
-                    .expand((a) => a.attachments)
-                    .firstWhere((a) => a.type == 'youtube');
-              } catch (_) {
-                youtubeAttachment = null;
-              }
-
               final quotation = provider.quotation;
               return isSelectingMode.value ||
                       quotation == null ||
                       quotation.data.attachments.isEmpty
                   ? IconButton(
                       icon: const Icon(Icons.send),
-                      onPressed: () => shareSelectedAttachments(
-                        context,
-                        provider.quotation?.data.customerDetails.mobile1 ?? '',
-                        provider.quotation?.data.pdfUrl ?? '',
-                        videoAttachment?.url ?? "",
-                        youtubeAttachment?.url ?? "",
-                        selectedAttachments,
-                        quotation?.data.attachments.isEmpty ?? false,
-                        isSelectingMode,
-                      ),
+                      onPressed: () async {
+                        final response = await whatsAppService
+                            .sendQuotationOnWhatsApp(
+                              context,
+                              quotationId,
+                              imageLinks: selectedAttachments.value,
+                            );
+                        if (response != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Sent successfully via WhatsApp'),
+                            ),
+                          );
+                        }
+                      },
                     )
-                  : SizedBox.shrink();
+                  : const SizedBox.shrink();
             },
           ),
         ],
@@ -92,87 +175,125 @@ class SelectAttachments extends HookWidget {
           if (quotation == null || quotation.data.attachments.isEmpty) {
             return const Center(child: Text('No attachments available'));
           }
+          final allAttachments = quotation.data.attachments
+              .expand(
+                (group) =>
+                    group.attachments.where((item) => item.type != 'youtube'),
+              )
+              .toList();
 
-          return Column(
-            children: [
-              Text(
-                'Select any 4 attachments only',
-                style: TextStyle(color: AppColors.error),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: quotation.data.attachments.length,
-                  itemBuilder: (context, index) {
-                    final attachment = quotation.data.attachments[index];
+          return GridView.builder(
+            itemCount: allAttachments.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: 0.9,
+            ),
+            padding: AppPadding.p2,
+            itemBuilder: (context, index) {
+              final item = allAttachments[index];
+              final fileUrl = '$baseImageUrl/public${item.url}';
+              final isSelected = selectedAttachments.value.contains(fileUrl);
 
-                    return Column(
-                      children: attachment.attachments.map((item) {
-                        final fileUrl = '$baseImageUrl/public${item.url}';
-                        final isSelected = selectedAttachments.value.contains(
-                          fileUrl,
-                        );
+              Widget previewWidget;
 
-                        return GestureDetector(
-                          onLongPress: () => handleLongPress(
-                            fileUrl,
-                            selectedAttachments,
-                            isSelectingMode,
-                          ),
-                          onTap: () {
-                            if (isSelectingMode.value) {
-                              toggleAttachment(
-                                fileUrl,
-                                selectedAttachments,
-                                isSelectingMode,
-                              );
-                            }
-                          },
-                          child: Stack(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: item.type == 'image'
-                                    ? Container(
-                                        height: 200,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(width: 1),
-                                          borderRadius: BorderRadius.circular(
-                                            SizeConfig.screenHeight * 0.008,
-                                          ),
-                                        ),
-                                        clipBehavior: Clip.hardEdge,
-                                        child: Image.network(
-                                          fileUrl,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                                return const Icon(
-                                                  Icons.broken_image,
-                                                );
-                                              },
-                                        ),
-                                      )
-                                    : SizedBox.shrink(),
-                              ),
-                              if (isSelected)
-                                const Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Icon(
-                                    Icons.check_circle,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  },
+              switch (item.type) {
+                case 'image':
+                  previewWidget = Image.network(
+                    fileUrl,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.broken_image),
+                  );
+                  break;
+                case 'video':
+                  previewWidget = buildVideoPreview(fileUrl);
+                  break;
+                case 'document':
+                case 'pdf':
+                case 'docx':
+                  previewWidget = buildPdfPreview(fileUrl);
+                  break;
+                default:
+                  previewWidget = Container(
+                    color: Colors.grey[300],
+                    child: const Center(child: Text("Unsupported type")),
+                  );
+              }
+
+              return GestureDetector(
+                onLongPress: () => handleLongPress(
+                  fileUrl,
+                  selectedAttachments,
+                  isSelectingMode,
                 ),
-              ),
-            ],
+                onTap: () {
+                  if (isSelectingMode.value) {
+                    toggleAttachment(
+                      fileUrl,
+                      selectedAttachments,
+                      isSelectingMode,
+                    );
+                  } else if (item.type == 'video') {}
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      height: AppDimensions.height30,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      clipBehavior: Clip.hardEdge,
+                      child: previewWidget,
+                    ),
+                    if (isSelected)
+                      const Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Icon(Icons.check_circle, color: Colors.blue),
+                      ),
+                    Container(
+                      height: AppDimensions.height30,
+                      width: AppDimensions.width50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppFontSize.s10),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            bottom: AppFontSize.s10,
+                            left: AppFontSize.s10,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: AppFontSize.s10,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black54,
+                                borderRadius: BorderRadius.circular(
+                                  AppFontSize.s10,
+                                ),
+                              ),
+                              child: Text(
+                                item.type?.toUpperCase() ?? "",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),

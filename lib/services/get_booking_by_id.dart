@@ -3,6 +3,9 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:gandhi_tvs/models/get_booking_by_id.dart';
 
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 class GetBookingByIdService {
   Future<Dio> getDioInstance() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -26,31 +29,34 @@ class GetBookingByIdService {
   ) async {
     try {
       final dio = await getDioInstance();
-
       final response = await dio.get("bookings/$bookingId");
 
       if (response.statusCode == 200) {
         return GetBookingsByIdModel.fromJson(response.data);
       } else {
+        // Use the global key to show snackbar
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text("Failed to load booking: ${response.statusCode}"),
+          ),
+        );
         return null;
       }
     } catch (e) {
-      String? errorMessage = "Something went wrong";
+      String errorMessage = "Something went wrong";
       if (e is DioException) {
-        if (e.response != null || e.response?.data != null) {
+        if (e.response != null && e.response?.data != null) {
           errorMessage = e.response?.data['message'] ?? errorMessage;
         } else {
-          errorMessage = e.message ?? "";
+          errorMessage = e.message ?? errorMessage;
         }
       } else {
         errorMessage = e.toString();
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(errorMessage ?? ""),
-        ),
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(backgroundColor: Colors.red, content: Text(errorMessage)),
       );
 
       return null;

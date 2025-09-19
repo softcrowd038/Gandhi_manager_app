@@ -27,7 +27,6 @@ class GetAllUsersService {
       final result = await dio.get('users');
 
       if (result.statusCode == 200 || result.statusCode == 201) {
-        print(result.data);
         return AllUsersModel.fromJson(result.data);
       } else {
         ScaffoldMessenger.of(

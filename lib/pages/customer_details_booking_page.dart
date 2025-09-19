@@ -1,5 +1,4 @@
 import 'package:gandhi_tvs/common/app_imports.dart';
-
 import 'package:provider/provider.dart';
 
 class CustomerDetailsBookingPage extends StatefulWidget {
@@ -79,7 +78,7 @@ class _CustomerDetailsBookingPageState
                       {"Mrs.": "Mrs."},
                       {"Miss.": "Miss."},
                     ],
-                    label: 'Mr',
+                    label: 'Sal.',
                     dropDownEditingController: saluationController,
                     selectedCustomerType: ValueNotifier<String?>(
                       selectedSaluation,

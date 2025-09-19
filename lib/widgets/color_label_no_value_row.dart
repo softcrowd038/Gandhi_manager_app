@@ -15,7 +15,7 @@ class ColorLabelNoValueRow extends StatelessWidget {
       padding: AppPadding.p2,
       child: Row(
         children: [
-          Icon(Icons.circle, color: color, size: AppDimensions.height2),
+          Icon(Icons.circle, color: color, size: AppDimensions.width2),
           SizedBox(width: AppDimensions.height1),
           Text(
             label ?? "",

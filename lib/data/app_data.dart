@@ -1,12 +1,11 @@
-import 'package:gandhi_tvs/common/app_imports.dart';
-
 final String baseUrl = "https://dealership.gandhitvs.in/api/v1/";
 
 final String baseImageUrl = "https://dealership.gandhitvs.in/api/v1";
 
-final String whatsAppBaseUrl = 'https://waapi.happysms.in';
+final String whatsAppBaseUrl = 'https://dealership.gandhitvs.in/api/v1';
 
-final String apikey = '550894e05e134b71a49ff8f9358fe3ee';
+final String apikey =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OGIwNTdlZjZmNmI1N2EzNDkzMGIzYSIsImlhdCI6MTc1Mzk1MDY2MiwiZXhwIjoxNzU2NTQyNjYyfQ.xtM0NKNyDgBdm1ln0JQwbOlvei85pvrgqm3jnkX5d00';
 
 final gstinPattern =
     r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$';
@@ -41,107 +40,4 @@ List<String> occupation = [
   "Government Job",
   "Students",
   "CSD",
-];
-
-final List<Map<String, dynamic>> drawerSections = [
-  {"title": "Dashboard", "icon": Icons.dashboard, "subSections": []},
-  {
-    "title": "Purchase",
-    "icon": FontAwesomeIcons.cartPlus,
-    "subSections": [
-      {
-        "title": "Dashboard",
-        "icon": Icons.directions_bike,
-        "page": BikeModelsDetails(),
-      },
-      {
-        "title": "Inward",
-        "icon": FontAwesomeIcons.motorcycle,
-        "page": AllBookingsPage(),
-      },
-      {
-        "title": "Manage Stock",
-        "icon": Icons.manage_accounts,
-        "page": AllBookingsPage(),
-      },
-      {
-        "title": "Stock Transfer",
-        "icon": Icons.change_circle,
-        "page": AllBookingsPage(),
-      },
-      {
-        "title": "Transfer Report",
-        "icon": Icons.report,
-        "page": AllBookingsPage(),
-      },
-    ],
-  },
-  {
-    "title": "Quotation",
-    "icon": FontAwesomeIcons.fileWaveform,
-    "subSections": [
-      {"title": "Generate Quotation", "icon": Icons.add, "page": MyHomePage()},
-      {
-        "title": "View Quotation",
-        "icon": Icons.file_copy,
-        "page": ActivityPage(isActivePage: false),
-      },
-      {
-        "title": "Report",
-        "icon": Icons.report,
-        "page": ActivityPage(isActivePage: false),
-      },
-    ],
-  },
-  {
-    "title": "Sales",
-    "icon": FontAwesomeIcons.sackDollar,
-    "subSections": [
-      {"title": "DashBoard", "icon": Icons.dashboard, "page": MyHomePage()},
-      {
-        "title": "New Booking",
-        "icon": Icons.book_online,
-        "page": ActivityPage(isActivePage: false),
-      },
-      {
-        "title": "Report",
-        "icon": Icons.report,
-        "page": ActivityPage(isActivePage: false),
-      },
-    ],
-  },
-  {
-    "title": "Quotation",
-    "icon": FontAwesomeIcons.fileWaveform,
-    "subSections": [
-      {"title": "Generate Quotation", "icon": Icons.add, "page": MyHomePage()},
-      {
-        "title": "View Quotation",
-        "icon": Icons.file_copy,
-        "page": ActivityPage(isActivePage: false),
-      },
-      {
-        "title": "Report",
-        "icon": Icons.report,
-        "page": ActivityPage(isActivePage: false),
-      },
-    ],
-  },
-  {
-    "title": "Quotation",
-    "icon": FontAwesomeIcons.fileWaveform,
-    "subSections": [
-      {"title": "Generate Quotation", "icon": Icons.add, "page": MyHomePage()},
-      {
-        "title": "View Quotation",
-        "icon": Icons.file_copy,
-        "page": ActivityPage(isActivePage: false),
-      },
-      {
-        "title": "Report",
-        "icon": Icons.report,
-        "page": ActivityPage(isActivePage: false),
-      },
-    ],
-  },
 ];
