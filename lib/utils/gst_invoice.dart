@@ -11,7 +11,7 @@ class GstInvoice {
   ) async {
     final pdf = pw.Document();
     final bookingData = data?.data;
-
+    print(data);
     if (bookingData == null) {
       throw Exception("No booking data available");
     }
@@ -21,7 +21,7 @@ class GstInvoice {
 
     final priceComponentsWithGST = bookingData.priceComponents.map((component) {
       final lineTotal = component.discountedValue?.toDouble() ?? 0.0;
-      final headerKey = component.header?.headerKey ?? '';
+      final headerKey = component.header.headerKey ?? '';
       final gstRate = double.parse(gstRateFetched ?? "");
       final unitCost = component.originalValue?.toDouble() ?? 0.0;
       final taxableValue = lineTotal * 100 / (100 + gstRate);
@@ -43,13 +43,13 @@ class GstInvoice {
         'discount': discount,
         'lineTotal': lineTotal,
         'hsnCode': _getHsnCodeForComponent(headerKey),
-        'headerName': component.header?.headerKey ?? 'N/A',
+        'headerName': component.header.headerKey ?? 'N/A',
       };
     }).toList();
 
     final insuranceComponent = bookingData.priceComponents.firstWhere(
       (comp) =>
-          (comp.header?.headerKey ?? '').toUpperCase().contains('INSURANCE'),
+          (comp.header.headerKey ?? '').toUpperCase().contains('INSURANCE'),
       orElse: () => PriceComponent(
         header: Header(id: '', headerKey: '', headerId: ''),
         originalValue: 0,
@@ -62,7 +62,7 @@ class GstInvoice {
         insuranceComponent.originalValue?.toDouble() ?? 0.0;
 
     final rtoComponent = bookingData.priceComponents.firstWhere(
-      (comp) => (comp.header?.headerKey ?? '').toUpperCase().contains('RTO'),
+      (comp) => (comp.header.headerKey ?? '').toUpperCase().contains('RTO'),
       orElse: () => PriceComponent(
         header: Header(id: '', headerKey: '', headerId: ''),
         originalValue: 0,
@@ -71,14 +71,33 @@ class GstInvoice {
         isMandatory: false,
       ),
     );
+
+    final addonTotal = bookingData.priceComponents.firstWhere(
+      (comp) => (comp.header.headerKey ?? '').toUpperCase().contains(
+        'ADDON SERVICES TOTAL',
+      ),
+      orElse: () => PriceComponent(
+        header: Header(id: '', headerKey: '', headerId: ''),
+        originalValue: 0,
+        discountedValue: 0,
+        isDiscountable: false,
+        isMandatory: false,
+      ),
+    );
+
     final rtoCharges = rtoComponent.originalValue?.toDouble() ?? 0.0;
     final hpCharges = bookingData.hypothecationCharges?.toDouble() ?? 0.0;
+    final addonServices = addonTotal.originalValue?.toDouble() ?? 0.0;
+    final totalC = insuranceCharges + rtoCharges + hpCharges - addonServices;
     final totalB = insuranceCharges + rtoCharges + hpCharges;
-    final totalA = (bookingData.discountedAmount?.toDouble() ?? 0.0) - totalB;
+    final totalA =
+        (bookingData.discountedAmount?.toDouble() ?? 0.0) -
+        totalB +
+        addonServices;
     final grandTotal = totalA + totalB;
 
-    final branchGstin = bookingData.branch?.id ?? bookingData.gstin ?? 'N/A';
-    final branchName = bookingData.branch?.name ?? 'N/A';
+    final branchGstin = bookingData.branch.id ?? bookingData.gstin ?? 'N/A';
+    final branchName = bookingData.branch.name ?? 'N/A';
 
     pdf.addPage(
       pw.MultiPage(
@@ -165,7 +184,7 @@ class GstInvoice {
             pw.Text("Date: $currentDate"),
             if (bookingData.bookingType == 'SUBDEALER') ...[
               pw.Text("Subdealer: ${bookingData.id ?? 'N/A'}"),
-              pw.Text("Address: ${bookingData.branch?.address ?? 'N/A'}"),
+              pw.Text("Address: ${bookingData.branch.address ?? 'N/A'}"),
             ],
           ],
         ),
@@ -183,17 +202,17 @@ class GstInvoice {
             children: [
               pw.Text("Invoice Number: ${bookingData.bookingNumber ?? 'N/A'}"),
               pw.Text(
-                "Customer Name: ${customer?.name ?? customer?.fullName ?? 'N/A'}",
+                "Customer Name: ${customer.name ?? customer.fullName ?? 'N/A'}",
               ),
               pw.Text(
-                "Address: ${customer?.address ?? 'N/A'}, ${customer?.taluka ?? 'N/A'}",
+                "Address: ${customer.address ?? 'N/A'}, ${customer.taluka ?? 'N/A'}",
               ),
-              pw.Text("Taluka: ${customer?.taluka ?? 'N/A'}"),
-              pw.Text("Mobile: ${customer?.mobile1 ?? 'N/A'}"),
+              pw.Text("Taluka: ${customer.taluka ?? 'N/A'}"),
+              pw.Text("Mobile: ${customer.mobile1 ?? 'N/A'}"),
               pw.Text(
                 "Exchange Mode: ${bookingData.exchange == true ? 'YES' : 'NO'}",
               ),
-              pw.Text("Aadhar No.: ${customer?.aadharNumber ?? 'N/A'}"),
+              pw.Text("Aadhar No.: ${customer.aadharNumber ?? 'N/A'}"),
               pw.Text("HPA: ${bookingData.hpa == true ? 'YES' : 'NO'}"),
             ],
           ),
@@ -203,15 +222,15 @@ class GstInvoice {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text("GSTIN: ${bookingData.gstin ?? 'N/A'}"),
-              pw.Text("District: ${customer?.district ?? 'N/A'}"),
-              pw.Text("Pincode: ${customer?.pincode ?? 'N/A'}"),
-              pw.Text("D.O.B: ${customer?.dob ?? 'N/A'}"),
-              pw.Text("Payment Mode: ${bookingData.payment?.type ?? 'CASH'}"),
+              pw.Text("District: ${customer.district ?? 'N/A'}"),
+              pw.Text("Pincode: ${customer.pincode ?? 'N/A'}"),
+              pw.Text("D.O.B: ${customer.dob ?? 'N/A'}"),
+              pw.Text("Payment Mode: ${bookingData.payment.type ?? 'CASH'}"),
               pw.Text(
-                "Financer: ${bookingData.payment?.financer?.name ?? 'N/A'}",
+                "Financer: ${bookingData.payment.financer?.name ?? 'N/A'}",
               ),
               pw.Text(
-                "Sales Representative Name: ${bookingData.salesExecutive?.name ?? 'N/A'}",
+                "Sales Representative Name: ${bookingData.salesExecutive.name ?? 'N/A'}",
               ),
             ],
           ),
@@ -234,7 +253,7 @@ class GstInvoice {
             pw.TableRow(
               children: [
                 pw.Text(
-                  "Model Name: ${bookingData.model?.modelName ?? bookingData.model?.name ?? 'N/A'}",
+                  "Model Name: ${bookingData.model.modelName ?? bookingData.model.name ?? 'N/A'}",
                 ),
                 pw.Text(
                   "Battery No: ${bookingData.batteryNumber?.toString() ?? 'N/A'}",
@@ -244,7 +263,7 @@ class GstInvoice {
             pw.TableRow(
               children: [
                 pw.Text("Chassis No: ${bookingData.chassisNumber ?? 'N/A'}"),
-                pw.Text("Colour: ${bookingData.color?.name ?? 'N/A'}"),
+                pw.Text("Colour: ${bookingData.color.name ?? 'N/A'}"),
               ],
             ),
             pw.TableRow(
@@ -456,10 +475,10 @@ class GstInvoice {
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
         pw.Text(
-          "Ex. Broker/ Sub Dealer: ${bookingData.exchangeDetails?.broker?.name ?? 'N/A'}",
+          "Ex. Broker/ Sub Dealer: ${bookingData.exchangeDetails.broker.name ?? 'N/A'}",
         ),
         pw.Text(
-          "Ex. Veh No: ${bookingData.exchangeDetails?.vehicleNumber ?? 'N/A'}",
+          "Ex. Veh No: ${bookingData.exchangeDetails.vehicleNumber ?? 'N/A'}",
         ),
       ],
     );

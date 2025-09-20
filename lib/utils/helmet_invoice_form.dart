@@ -103,18 +103,18 @@ class HelmetInvoiceForm {
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text(
-                          "${bookingData.customerDetails?.salutation ?? 'Mrs.'} ${bookingData.customerDetails?.name ?? 'N/A'}",
+                          "${bookingData.customerDetails.salutation ?? 'Mrs.'} ${bookingData.customerDetails.name ?? 'N/A'}",
                           style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                         ),
                         pw.Text("Address: ${_getCustomerAddress(bookingData)}"),
                         pw.Text(
-                          "Mobile: ${bookingData.customerDetails?.mobile1 ?? 'N/A'}",
+                          "Mobile: ${bookingData.customerDetails.mobile1 ?? 'N/A'}",
                         ),
                         pw.Text(
-                          "Aadhar: ${bookingData.customerDetails?.aadharNumber ?? 'N/A'}",
+                          "Aadhar: ${bookingData.customerDetails.aadharNumber ?? 'N/A'}",
                         ),
                         pw.Text(
-                          "Bill Type: ${bookingData.payment?.type?.toUpperCase() ?? 'FINANCE'}",
+                          "Bill Type: ${bookingData.payment.type?.toUpperCase() ?? 'FINANCE'}",
                         ),
                       ],
                     ),
@@ -394,8 +394,8 @@ class HelmetInvoiceForm {
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
                         child: pw.Text(
-                          bookingData.model?.modelName ??
-                              bookingData.model?.name ??
+                          bookingData.model.modelName ??
+                              bookingData.model.name ??
                               'JUPITER 125 CC DISC SX OBD IIB',
                         ),
                       ),
@@ -433,7 +433,7 @@ class HelmetInvoiceForm {
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
                   pw.Text(
-                    "(${bookingData.customerDetails?.salutation ?? 'Mrs.'} ${bookingData.customerDetails?.name ?? 'BH crtm'})",
+                    "(${bookingData.customerDetails.salutation ?? 'Mrs.'} ${bookingData.customerDetails.name ?? 'BH crtm'})",
                   ),
                   pw.Text(
                     "For (GANDHI MOTORS)\nAuthorised Signatory",
@@ -470,7 +470,6 @@ class HelmetInvoiceForm {
   // Helper method to format customer address
   static String _getCustomerAddress(Data bookingData) {
     final customer = bookingData.customerDetails;
-    if (customer == null) return "edfrdefde";
 
     List<String> addressParts = [];
     if (customer.address != null && customer.address!.isNotEmpty) {

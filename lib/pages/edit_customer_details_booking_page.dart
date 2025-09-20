@@ -65,78 +65,74 @@ class _CustomerDetailsBookingPageState
       );
 
       if (getBookingByIdProvider.bookings?.data != null) {
-        final bookingData = getBookingByIdProvider.bookings!.data!;
+        final bookingData = getBookingByIdProvider.bookings!.data;
         final bookingFormProvider = Provider.of<BookingFormProvider>(
           context,
           listen: false,
         );
 
         setState(() {
-          selectedSaluation = bookingData.customerDetails?.salutation;
-          selectedOccupation = bookingData.customerDetails?.occupation;
+          selectedSaluation = bookingData.customerDetails.salutation;
+          selectedOccupation = bookingData.customerDetails.occupation;
         });
 
-        nameController.text = bookingData.customerDetails?.name ?? '';
-        address1Controller.text = bookingData.customerDetails?.address ?? '';
+        nameController.text = bookingData.customerDetails.name ?? '';
+        address1Controller.text = bookingData.customerDetails.address ?? '';
 
-        occuationController.text =
-            bookingData.customerDetails?.occupation ?? '';
-        nomineeController.text = bookingData.customerDetails?.nomineeName ?? '';
+        occuationController.text = bookingData.customerDetails.occupation ?? '';
+        nomineeController.text = bookingData.customerDetails.nomineeName ?? '';
         nomineeRelationController.text =
-            bookingData.customerDetails?.nomineeRelation ?? '';
+            bookingData.customerDetails.nomineeRelation ?? '';
         nomineeAgeController.text =
-            bookingData.customerDetails?.nomineeAge?.toString() ?? '';
-        talukaController.text = bookingData.customerDetails?.taluka ?? '';
-        pinController.text = bookingData.customerDetails?.pincode ?? '';
-        districtController.text = bookingData.customerDetails?.district ?? '';
-        mobile1Controller.text = bookingData.customerDetails?.mobile1 ?? '';
-        mobile2Controller.text = bookingData.customerDetails?.mobile2 ?? '';
-        aadharController.text = bookingData.customerDetails?.aadharNumber ?? '';
-        panCardController.text = bookingData.customerDetails?.panNo ?? '';
-        saluationController.text =
-            bookingData.customerDetails?.salutation ?? '';
+            bookingData.customerDetails.nomineeAge?.toString() ?? '';
+        talukaController.text = bookingData.customerDetails.taluka ?? '';
+        pinController.text = bookingData.customerDetails.pincode ?? '';
+        districtController.text = bookingData.customerDetails.district ?? '';
+        mobile1Controller.text = bookingData.customerDetails.mobile1 ?? '';
+        mobile2Controller.text = bookingData.customerDetails.mobile2 ?? '';
+        aadharController.text = bookingData.customerDetails.aadharNumber ?? '';
+        panCardController.text = bookingData.customerDetails.panNo ?? '';
+        saluationController.text = bookingData.customerDetails.salutation ?? '';
 
-        fetchedBirthdate = bookingData.customerDetails?.dob;
+        fetchedBirthdate = bookingData.customerDetails.dob?.toIso8601String();
 
         bookingFormProvider.setSalutation(
-          bookingData.customerDetails?.salutation ?? "",
+          bookingData.customerDetails.salutation ?? "",
         );
-        bookingFormProvider.setName(bookingData.customerDetails?.name ?? "");
+        bookingFormProvider.setName(bookingData.customerDetails.name ?? "");
         bookingFormProvider.setAddress(
-          bookingData.customerDetails?.address ?? "",
+          bookingData.customerDetails.address ?? "",
         );
         bookingFormProvider.setOccupation(
-          bookingData.customerDetails?.occupation ?? "",
+          bookingData.customerDetails.occupation ?? "",
         );
         bookingFormProvider.setNomineeName(
-          bookingData.customerDetails?.nomineeName ?? "",
+          bookingData.customerDetails.nomineeName ?? "",
         );
         bookingFormProvider.setNomineeRelation(
-          bookingData.customerDetails?.nomineeRelation ?? "",
+          bookingData.customerDetails.nomineeRelation ?? "",
         );
         bookingFormProvider.setNomineeAge(
-          bookingData.customerDetails?.nomineeAge ?? 0,
+          bookingData.customerDetails.nomineeAge ?? 0,
         );
-        bookingFormProvider.setTaluka(
-          bookingData.customerDetails?.taluka ?? "",
-        );
+        bookingFormProvider.setTaluka(bookingData.customerDetails.taluka ?? "");
         bookingFormProvider.setPincode(
-          bookingData.customerDetails?.pincode ?? "",
+          bookingData.customerDetails.pincode ?? "",
         );
         bookingFormProvider.setDistrict(
-          bookingData.customerDetails?.district ?? "",
+          bookingData.customerDetails.district ?? "",
         );
         bookingFormProvider.setMobile1(
-          bookingData.customerDetails?.mobile1 ?? "",
+          bookingData.customerDetails.mobile1 ?? "",
         );
         bookingFormProvider.setMobile2(
-          bookingData.customerDetails?.mobile2 ?? "",
+          bookingData.customerDetails.mobile2 ?? "",
         );
         bookingFormProvider.setAadharNumber(
-          bookingData.customerDetails?.aadharNumber ?? "",
+          bookingData.customerDetails.aadharNumber ?? "",
         );
         bookingFormProvider.setPanNumber(
-          bookingData.customerDetails?.panNo ?? "",
+          bookingData.customerDetails.panNo ?? "",
         );
 
         setState(() {});

@@ -25,6 +25,7 @@ export 'package:flutter_html_to_pdf_plus/flutter_html_to_pdf_plus.dart';
 export 'package:permission_handler/permission_handler.dart';
 export 'package:gandhi_tvs/widgets/booking_status_container.dart';
 export 'package:gandhi_tvs/widgets/custom_pop_up_menu_for_verification.dart';
+export 'package:gandhi_tvs/widgets/edit_item_container.dart';
 
 export 'dart:math';
 export 'package:file_picker/file_picker.dart';

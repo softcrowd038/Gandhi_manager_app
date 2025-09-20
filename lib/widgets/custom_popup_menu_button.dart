@@ -25,10 +25,12 @@ class _CustomPopUpMenuButtonState extends State<CustomPopUpMenuButton> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print(widget.booking.id);
       final getBookingByIdProvider = Provider.of<GetBookingsByIdProvider>(
         context,
         listen: false,
       );
+      getBookingByIdProvider.reset();
       getBookingByIdProvider.fetchBookingsById(
         context,
         widget.booking.id ?? "",
@@ -264,6 +266,14 @@ class _CustomPopUpMenuButtonState extends State<CustomPopUpMenuButton> {
                           ),
                         );
                 } else if (value == "print_gst_invoice") {
+                  bookingByIdProvider.reset();
+                  await bookingByIdProvider.fetchBookingsById(
+                    context,
+                    widget.booking.id ?? "",
+                  );
+
+                  // Add a small delay to ensure state is updated
+                  await Future.delayed(const Duration(milliseconds: 100));
                   GstInvoice.generatePdf(
                     bookingByIdProvider.bookings,
                     declarationProvider.declarationModel,
@@ -277,6 +287,14 @@ class _CustomPopUpMenuButtonState extends State<CustomPopUpMenuButton> {
                         18,
                   );
                 } else if (value == 'print_deal_form') {
+                  bookingByIdProvider.reset();
+                  await bookingByIdProvider.fetchBookingsById(
+                    context,
+                    widget.booking.id ?? "",
+                  );
+
+                  // Add a small delay to ensure state is updated
+                  await Future.delayed(const Duration(milliseconds: 100));
                   DealFormPdf.generatePdf(
                     bookingByIdProvider.bookings,
                     declarationProvider.declarationModel,
@@ -290,6 +308,14 @@ class _CustomPopUpMenuButtonState extends State<CustomPopUpMenuButton> {
                         18,
                   );
                 } else if (value == 'print_delivery_challan') {
+                  bookingByIdProvider.reset();
+                  await bookingByIdProvider.fetchBookingsById(
+                    context,
+                    widget.booking.id ?? "",
+                  );
+
+                  await Future.delayed(const Duration(milliseconds: 100));
+
                   DelivaryChallanPdf.generatePdf(
                     bookingByIdProvider.bookings,
                     declarationProvider.declarationModel,
@@ -310,14 +336,14 @@ class _CustomPopUpMenuButtonState extends State<CustomPopUpMenuButton> {
                   try {
                     await helmetDeclaratProvider.getHelmetDeclarations(
                       context,
-                      bookingByIdProvider.bookings?.data?.chassisNumber ?? "",
+                      bookingByIdProvider.bookings?.data.chassisNumber ?? "",
                     );
 
                     Navigator.pop(context);
 
                     if (helmetDeclaratProvider.helmetDeclarationPdf != null) {
                       final chassisNumber =
-                          bookingByIdProvider.bookings?.data?.chassisNumber ??
+                          bookingByIdProvider.bookings?.data.chassisNumber ??
                           "helmet_declaration";
                       await _saveAndOpenPdf(
                         helmetDeclaratProvider.helmetDeclarationPdf!,

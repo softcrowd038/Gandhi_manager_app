@@ -67,14 +67,14 @@ class _EditDiscountPageBookingState extends State<EditDiscountPageBooking> {
       if (_isDisposed) return; // Check if disposed after async operation
 
       if (getBookingByIdProvider.bookings?.data != null) {
-        final bookingData = getBookingByIdProvider.bookings!.data!;
+        final bookingData = getBookingByIdProvider.bookings!.data;
         final bookingFormProvider = Provider.of<BookingFormProvider>(
           context,
           listen: false,
         );
 
         final discount =
-            bookingData.totalAmount! - bookingData.discountedAmount!;
+            (bookingData.totalAmount ?? 0) - bookingData.discountedAmount!;
 
         if (!_isDisposed) {
           // Check before calling setState
@@ -179,14 +179,14 @@ class _EditDiscountPageBookingState extends State<EditDiscountPageBooking> {
                             controller: discountController,
                             onChanged: (value) {
                               bookingFormProvider.setDiscount(
-                                int.tryParse(value) ?? 0,
+                                double.tryParse(value) ?? 0,
                               );
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter Discount';
                               }
-                              if (int.tryParse(value) == null) {
+                              if (double.tryParse(value) == null) {
                                 return 'Please enter a valid number';
                               }
                               return null;
@@ -254,6 +254,9 @@ class _EditDiscountPageBookingState extends State<EditDiscountPageBooking> {
                     minimum: AppPadding.p2,
                     child: GestureDetector(
                       onTap: () {
+                        print(
+                          bookingFormProvider.bookingFormModel.accessoryIds,
+                        );
                         final bookingFormModel = BookingFormModel(
                           customerAadharNumber: bookingFormProvider
                               .bookingFormModel
@@ -286,8 +289,9 @@ class _EditDiscountPageBookingState extends State<EditDiscountPageBooking> {
                               bookingFormProvider.bookingFormModel.accessoryIds,
                           isExchange:
                               bookingFormProvider.bookingFormModel.isExchange,
-                          optionalComponents:
-                              selectedModelHeadersProvider.selectedHeaders,
+                          optionalComponents: bookingFormProvider
+                              .bookingFormModel
+                              .optionalComponents,
                           exchangePrice: bookingFormProvider
                               .bookingFormModel
                               .exchangePrice,

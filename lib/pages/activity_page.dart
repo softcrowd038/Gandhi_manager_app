@@ -40,7 +40,7 @@ class _ActivityPageState extends State<ActivityPage> {
       } else {
         filteredQuotations = allQuotations
             .where(
-              (quotation) => quotation.customer.name.toLowerCase().contains(
+              (quotation) => quotation.customer.name!.toLowerCase().contains(
                 query.toLowerCase(),
               ),
             )
@@ -111,13 +111,15 @@ class _ActivityPageState extends State<ActivityPage> {
                     final quotationId = quotation.id;
 
                     return ActivityCard(
-                      customerName: customerName,
-                      customerAddress: customerAddress,
+                      customerName: customerName ?? "",
+                      customerAddress: customerAddress ?? "",
                       modelName: modelName.toString(),
-                      phoneNumber: customer.mobile1,
-                      quotationId: quotationId,
+                      phoneNumber: customer.mobile1 ?? "",
+                      quotationId: quotationId ?? "",
                       customerExpectedDate: usefulFunctions
-                          .formatDateToYyyyMmDd(quotation.expectedDeliveryDate),
+                          .formatDateToYyyyMmDd(
+                            quotation.expectedDeliveryDate ?? DateTime.now(),
+                          ),
                     );
                   },
                 );

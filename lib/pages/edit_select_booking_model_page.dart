@@ -41,7 +41,7 @@ class _SelectBookingModelPageState extends State<EditSelectBookingModelPage> {
     );
 
     if (getBookingByIdProvider.bookings?.data != null) {
-      final bookingData = getBookingByIdProvider.bookings!.data!;
+      final bookingData = getBookingByIdProvider.bookings!.data;
 
       setState(() {
         selectedCustomerType = bookingData.customerType;
@@ -72,9 +72,9 @@ class _SelectBookingModelPageState extends State<EditSelectBookingModelPage> {
             filteredModels = bikeModelProvider.bikeModels!.data!.models;
           });
 
-          if (bookingData.model?.id != null) {
+          if (bookingData.model.id != null) {
             final selectedModel = filteredModels.firstWhere(
-              (model) => model.id == bookingData.model?.id,
+              (model) => model.id == bookingData.model.id,
               orElse: () => Model(prices: []),
             );
 

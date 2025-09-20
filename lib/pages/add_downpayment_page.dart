@@ -33,7 +33,7 @@ class AddDownpaymentPage extends HookWidget {
         booking.exchangeDetails?.price.toString() ?? "0",
       );
 
-      final downpayment = (dealAmount - financeAmt - exchangeAmount) + gcAmount;
+      final downpayment = (dealAmount + gcAmount) - financeAmt - exchangeAmount;
 
       downpaymentController.text = downpayment.toString();
 

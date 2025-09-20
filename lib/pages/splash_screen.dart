@@ -19,6 +19,8 @@ class SplashScreen extends HookWidget {
 
       Future.delayed(const Duration(seconds: 3), () async {
         String token = await getAuthToken();
+        print(token);
+
         if (token.isNotEmpty) {
           Navigator.pushReplacement(
             context,

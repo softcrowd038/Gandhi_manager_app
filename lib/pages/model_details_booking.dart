@@ -221,7 +221,7 @@ class _ModelDetailsBookingState extends State<ModelDetailsBooking> {
                         },
                         label: 'RTO Amount',
                         onChanged: (value) {
-                          bookingFormProvider.setRtoAmount(int.parse(value));
+                          bookingFormProvider.setRtoAmount(double.parse(value));
                         },
                         keyboardType: TextInputType.number,
                         suffixIconColor: Colors.black,

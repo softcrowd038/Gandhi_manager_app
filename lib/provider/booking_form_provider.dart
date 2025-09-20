@@ -86,7 +86,7 @@ class BookingFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setRtoAmount(int value) {
+  void setRtoAmount(double value) {
     _bookingFormModel.rtoAmount = value;
     notifyListeners();
   }
@@ -181,7 +181,7 @@ class BookingFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setDiscount(int value) {
+  void setDiscount(double value) {
     _bookingFormModel.discountValue = value;
     notifyListeners();
   }
@@ -238,6 +238,11 @@ class BookingFormProvider extends ChangeNotifier {
 
   void setAccessories(List<String> value) {
     _bookingFormModel.accessoryIds = value;
+    notifyListeners();
+  }
+
+  void setPriceComponents(List<String> value) {
+    _bookingFormModel.optionalComponents = value;
     notifyListeners();
   }
 

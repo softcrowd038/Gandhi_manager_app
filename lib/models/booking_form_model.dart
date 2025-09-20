@@ -8,7 +8,7 @@ class BookingFormModel {
   String gstin;
   String rtoType;
   String branch;
-  int rtoAmount;
+  double rtoAmount;
   String salesExecutive;
   String saluation;
   String customerName;
@@ -34,7 +34,7 @@ class BookingFormModel {
   int gcAmount;
 
   String discountType;
-  int discountValue;
+  double discountValue;
 
   List<String> accessoryIds;
 

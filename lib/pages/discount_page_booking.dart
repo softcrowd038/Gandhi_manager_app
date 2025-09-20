@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:provider/provider.dart';
@@ -78,7 +78,7 @@ class DiscountPageBooking extends HookWidget {
                       suffixIconColor: Colors.grey,
                       controller: discountController,
                       onChanged: (value) {
-                        bookingFormProvider.setDiscount(int.parse(value));
+                        bookingFormProvider.setDiscount(double.parse(value));
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -118,9 +118,9 @@ class DiscountPageBooking extends HookWidget {
                             ?.model
                             .prices
                             .where((item) {
-                              final headerKey =
-                                  item.headerKey?.toLowerCase() ?? '';
-                              return !headerKey.contains('on road') &&
+                              final headerKey = item.headerKey?.toLowerCase();
+                              return headerKey != null &&
+                                  !headerKey.contains('on road') &&
                                   !headerKey.contains('+') &&
                                   !headerKey.contains('total');
                             })

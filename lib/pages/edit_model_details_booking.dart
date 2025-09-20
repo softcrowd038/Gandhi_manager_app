@@ -91,28 +91,27 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
         widget.bookingId ?? "",
       );
 
-      print(getBookingByIdProvider.bookings?.data?.color?.id);
+      print(getBookingByIdProvider.bookings?.data.color.id);
 
       if (getBookingByIdProvider.bookings?.data != null) {
-        final bookingData = getBookingByIdProvider.bookings!.data!;
+        final bookingData = getBookingByIdProvider.bookings!.data;
         final bookingFormProvider = Provider.of<BookingFormProvider>(
           context,
           listen: false,
         );
 
         setState(() {
-          selectedColor = bookingData.color?.id;
-          colorEditingController.text = bookingData.color?.name ?? '';
+          selectedColor = bookingData.color.id;
+          colorEditingController.text = bookingData.color.name ?? '';
           selectedRtoType = bookingData.rto;
           rtoTypeEditingController.text = bookingData.rto ?? '';
           selectedHPA = bookingData.hpa == true ? 'yes' : 'no';
           hpaEditingController.text = selectedHPA!;
-          selectedSalesExecuative = bookingData.salesExecutive?.id;
-          salesExecutiveController.text =
-              bookingData.salesExecutive?.name ?? '';
+          selectedSalesExecuative = bookingData.salesExecutive.id;
+          salesExecutiveController.text = bookingData.salesExecutive.name ?? '';
         });
 
-        bookingFormProvider.setColor(bookingData.color?.id ?? "");
+        bookingFormProvider.setColor(bookingData.color.id ?? "");
         bookingFormProvider.setRto(bookingData.rto ?? "");
 
         if (bookingData.rtoAmount != null) {
@@ -122,10 +121,10 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
 
         bookingFormProvider.setHpa(bookingData.hpa ?? false);
         bookingFormProvider.setSalesExecuative(
-          bookingData.salesExecutive?.id ?? "",
+          bookingData.salesExecutive.id ?? "",
         );
 
-        _setSelectedAccessories(bookingData.accessories);
+        _setSelectedAccessories(bookingData.priceComponents);
 
         setState(() {});
       }
@@ -144,9 +143,11 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
     }
   }
 
-  void _setSelectedAccessories(List<AccessoryElement> accessories) {
+  void _setSelectedAccessories(List<PriceComponent> accessories) {
     _selectedAccessoryIds = accessories
-        .map((accessory) => accessory.accessory?.accessoryId ?? '')
+        .map(
+          (accessory) => accessory.header.headerId ?? accessory.header.id ?? '',
+        )
         .where((id) => id.isNotEmpty)
         .toList();
 
@@ -157,7 +158,6 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
 
     bookingFormProvider.setAccessories(_selectedAccessoryIds);
 
-    // Also update the boolean selection list
     final modelHeadersProvider = Provider.of<ModelHeadersProvider>(
       context,
       listen: false,
@@ -165,17 +165,33 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
     final prices = modelHeadersProvider.modelHeaders?.data?.model.prices ?? [];
 
     setState(() {
-      selectedAccessories = List<bool>.generate(
-        prices.length,
-        (index) => _selectedAccessoryIds.contains(prices[index].headerId ?? ''),
-      );
+      selectedAccessories = List<bool>.generate(prices.length, (index) {
+        final currentAccessory = prices[index];
+
+        final currentId = currentAccessory.headerId ?? '';
+
+        return _selectedAccessoryIds.contains(currentId);
+      });
     });
 
     print('Selected accessory IDs: $_selectedAccessoryIds');
+    print('Available prices count: ${prices.length}');
   }
 
-  // 2. Create a method to handle accessory selection/deselection
-  void _toggleAccessorySelection(String accessoryId, int index) {
+  void _toggleAccessorySelection(int index) {
+    final modelHeadersProvider = Provider.of<ModelHeadersProvider>(
+      context,
+      listen: false,
+    );
+    final prices = modelHeadersProvider.modelHeaders?.data?.model.prices ?? [];
+
+    if (index >= prices.length) return;
+
+    final accessory = prices[index];
+    final accessoryId = accessory.headerId ?? '';
+
+    if (accessoryId.isEmpty) return;
+
     setState(() {
       if (_selectedAccessoryIds.contains(accessoryId)) {
         _selectedAccessoryIds.remove(accessoryId);
@@ -190,7 +206,12 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
       context,
       listen: false,
     );
-    bookingFormProvider.setAccessories(_selectedAccessoryIds);
+    print(_selectedAccessoryIds);
+    bookingFormProvider.setPriceComponents(_selectedAccessoryIds);
+
+    print(
+      'Toggled accessory: $accessoryId, now selected: ${_selectedAccessoryIds.contains(accessoryId)}',
+    );
   }
 
   @override
@@ -365,7 +386,7 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
                         },
                         label: 'RTO Amount',
                         onChanged: (value) {
-                          bookingFormProvider.setRtoAmount(int.parse(value));
+                          bookingFormProvider.setRtoAmount(double.parse(value));
                         },
                         keyboardType: TextInputType.number,
                         suffixIconColor: Colors.black,
@@ -492,9 +513,11 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           if (selectedAccessories.length != prices.length) {
                             setState(() {
-                              selectedAccessories = List<bool>.filled(
+                              selectedAccessories = List<bool>.generate(
                                 prices.length,
-                                false,
+                                (index) => _selectedAccessoryIds.contains(
+                                  prices[index].headerId ?? '',
+                                ),
                               );
                             });
                           }
@@ -512,18 +535,28 @@ class _ModelDetailsBookingState extends State<EditModelDetailsBooking> {
                           itemBuilder: (BuildContext context, int index) {
                             final accessory = prices[index];
                             final accessoryId = accessory.headerId ?? '';
-                            _selectedAccessoryIds.contains(accessoryId);
+
+                            final isSelected = _selectedAccessoryIds.contains(
+                              accessoryId,
+                            );
+                            final isMandatory = accessory.isMandatory ?? false;
 
                             return GestureDetector(
                               onTap: () {
-                                if (!(accessory.isMandatory ?? false)) {
-                                  _toggleAccessorySelection(accessoryId, index);
+                                if (!isMandatory) {
+                                  _toggleAccessorySelection(index);
                                 }
                               },
-                              child: ItemSelectionContainer(
-                                accessory: accessory.headerKey ?? '',
-                                isMandatory: accessory.isMandatory ?? false,
+                              child: EditItemSelectionContainer(
+                                accessory: accessory.headerKey ?? 'Unknown',
+                                isMandatory: isMandatory,
                                 accessoryId: accessoryId,
+                                isSelected: isSelected,
+                                onSelectionChanged: (bool value) {
+                                  if (!isMandatory) {
+                                    _toggleAccessorySelection(index);
+                                  }
+                                },
                               ),
                             );
                           },

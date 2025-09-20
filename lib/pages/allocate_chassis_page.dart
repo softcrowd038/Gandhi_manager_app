@@ -133,7 +133,7 @@ class AllocateChassisPage extends HookWidget {
         final chassisAllocationModel = ChassisAllocationModel(
           chassisNumber: chassisNumberController.text,
           hasClaim: hasClaim.value,
-          hasDeviation: hasDeviation.value ? 'Yes' : 'No',
+          hasDeviation: hasDeviation.value,
           priceClaim: hasClaim.value
               ? double.parse(priceClaimController.text)
               : null,
@@ -279,7 +279,6 @@ class AllocateChassisPage extends HookWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Document upload button with counter
                         GestureDetector(
                           onTap: documents.value.length >= 6
                               ? null

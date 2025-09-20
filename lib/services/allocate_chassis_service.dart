@@ -28,6 +28,7 @@ class AllocateChassisService {
     print('Chassis Number: ${chassisAllocateModel.chassisNumber}');
     print('Reason: ${chassisAllocateModel.reason}');
     print('Has Claim: ${chassisAllocateModel.hasClaim}');
+    print('Has Claim: ${chassisAllocateModel.hasDeviation}');
     print('Price Claim: ${chassisAllocateModel.priceClaim}');
     print('Description: ${chassisAllocateModel.description}');
     print('Documents: ${chassisAllocateModel.documents.length}');
@@ -35,10 +36,12 @@ class AllocateChassisService {
     try {
       final dio = await getDioInstance();
 
-      // 1. Prepare the request data (body)
       final requestData = {
         'chassisNumber': chassisAllocateModel.chassisNumber,
         'hasClaim': chassisAllocateModel.hasClaim.toString(),
+        'is_deviation': chassisAllocateModel.hasDeviation == true
+            ? 'YES'
+            : "NO",
         if (chassisAllocateModel.priceClaim != null)
           'priceClaim': chassisAllocateModel.priceClaim!.toString(),
         if (chassisAllocateModel.description != null &&

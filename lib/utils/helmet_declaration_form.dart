@@ -38,7 +38,6 @@ class HelmetDeclarationForm {
               ),
               pw.SizedBox(height: 10),
 
-              // Content
               pw.Center(
                 child: pw.Text(
                   "केंद्रीय मोटर वाहन नियम १३८ { ४ } { फ }",
@@ -47,26 +46,22 @@ class HelmetDeclarationForm {
               ),
               pw.SizedBox(height: 10),
 
-              // Divider
               pw.Divider(thickness: 2, color: PdfColors.grey400),
               pw.SizedBox(height: 20),
 
-              // Declaration text
               pw.Text(
-                "मी..${bookingData.customerDetails?.name ?? 'N/A'}, असे घोषित करतो कि\n\n"
+                "मी..${bookingData.customerDetails.name ?? 'N/A'}, असे घोषित करतो कि\n\n"
                 "दि. $formattedDate रोजी गांधी मोटार टि व्हि यस नासिक\n"
-                "या वितरकाकडून टि व्हि यस..${bookingData.model?.modelName ?? bookingData.model?.name ?? 'N/A'}, हे वाहन खरेदी केले आहे.\n"
+                "या वितरकाकडून टि व्हि यस..${bookingData.model.modelName ?? bookingData.model.name ?? 'N/A'}, हे वाहन खरेदी केले आहे.\n"
                 "त्याचा तपशील खालील प्रमाणे...",
                 textAlign: pw.TextAlign.justify,
               ),
               pw.SizedBox(height: 20),
 
-              // Vehicle details
               pw.Text("चेसिस नंबर: ${bookingData.chassisNumber ?? ''}"),
               pw.Text("इंजिन नंबर: ${bookingData.engineNumber ?? ''}"),
               pw.SizedBox(height: 20),
 
-              // More declaration text
               pw.Text(
                 "केंद्रीय मोटर वाहन नियम १३८ { ४ } { फ } प्रमाणे वितरकाने दुचाकी वितरीत करते वेळी विहित "
                 "मानाकनाचे २ (दोन) हेल्मेट पुरवणे/विकत देणे बंधनकारक आहे. त्याचप्रमाणे मला BUREAU OF INDIA STANDARS "
@@ -93,7 +88,7 @@ class HelmetDeclarationForm {
                     children: [
                       pw.Text("दुचाकी खरेदिदाराची स्वाक्षरी"),
                       pw.Text(
-                        "नाव :- ${bookingData.customerDetails?.name ?? 'N/A'}",
+                        "नाव :- ${bookingData.customerDetails.name ?? 'N/A'}",
                       ),
                     ],
                   ),

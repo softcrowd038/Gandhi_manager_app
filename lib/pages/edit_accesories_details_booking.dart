@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison, use_build_context_synchronously
 
 import 'package:gandhi_tvs/common/app_imports.dart' hide Price;
+import 'package:gandhi_tvs/widgets/edit_container_with_name_and_price.dart';
 import 'package:provider/provider.dart';
 import 'package:gandhi_tvs/models/model_headers.dart';
 
@@ -19,6 +20,8 @@ class _EditAccessoriesDetailsBookingState
   bool _isLoading = false;
   bool _isInitialDataLoaded = false;
   List<String> _preSelectedAccessoryIds = [];
+  List<String> _selectedAccessoryIds = [];
+  Map<String, bool> _accessorySelectionState = {};
 
   @override
   void initState() {
@@ -49,7 +52,7 @@ class _EditAccessoriesDetailsBookingState
       );
 
       if (getBookingByIdProvider.bookings?.data != null) {
-        final bookingData = getBookingByIdProvider.bookings!.data!;
+        final bookingData = getBookingByIdProvider.bookings!.data;
         final bookingFormProvider = Provider.of<BookingFormProvider>(
           context,
           listen: false,
@@ -58,11 +61,13 @@ class _EditAccessoriesDetailsBookingState
         // Get pre-selected accessory IDs from booking data
         _preSelectedAccessoryIds = bookingData.accessories
             .map((accessory) => accessory.accessory?.id ?? "")
-            .where((id) => id != null)
+            .where((id) => id.isNotEmpty)
             .toList();
 
+        _selectedAccessoryIds = List.from(_preSelectedAccessoryIds);
+
         // Update provider with fetched data
-        bookingFormProvider.setAccessories(_preSelectedAccessoryIds);
+        bookingFormProvider.setAccessories(_selectedAccessoryIds);
 
         // Load accessories for the model
         final selectedModelsProvider = Provider.of<SelectedModelsProvider>(
@@ -79,31 +84,23 @@ class _EditAccessoriesDetailsBookingState
           );
           await accessoriesProvider.getAllAccessoriesByModel(context, modelId);
 
+          // Initialize selection state
+          if (accessoriesProvider.accessoriesModel?.data?.accessories != null) {
+            for (var accessory
+                in accessoriesProvider.accessoriesModel!.data!.accessories) {
+              if (accessory.id != null) {
+                _accessorySelectionState[accessory.id!] = _selectedAccessoryIds
+                    .contains(accessory.id);
+              }
+            }
+          }
+
           final selectedModelsHeadersProvider =
               Provider.of<ModelHeadersProvider>(context, listen: false);
           await selectedModelsHeadersProvider.fetchModelHeaders(
             context,
             modelId,
           );
-
-          // Pre-select accessories based on booking data
-          final selectedAccessoriesProvider =
-              Provider.of<SelectedAccessoriesProvider>(context, listen: false);
-
-          // Clear any previous selections
-          selectedAccessoriesProvider.clearAccessories();
-
-          // Select accessories that were in the booking
-          if (accessoriesProvider.accessoriesModel?.data?.accessories != null) {
-            for (var accessory
-                in accessoriesProvider.accessoriesModel!.data!.accessories) {
-              if (_preSelectedAccessoryIds.contains(accessory.id)) {
-                selectedAccessoriesProvider.toggleAccessory(
-                  accessory.name ?? "",
-                );
-              }
-            }
-          }
         }
 
         setState(() {
@@ -124,13 +121,26 @@ class _EditAccessoriesDetailsBookingState
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void _toggleAccessorySelection(String accessoryId, String accessoryName) {
+    setState(() {
+      if (_selectedAccessoryIds.contains(accessoryId)) {
+        _selectedAccessoryIds.remove(accessoryId);
+        _accessorySelectionState[accessoryId] = false;
+      } else {
+        _selectedAccessoryIds.add(accessoryId);
+        _accessorySelectionState[accessoryId] = true;
+      }
+    });
+
     final bookingFormProvider = Provider.of<BookingFormProvider>(
       context,
       listen: false,
     );
+    bookingFormProvider.setAccessories(_selectedAccessoryIds);
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -229,47 +239,20 @@ class _EditAccessoriesDetailsBookingState
                         itemCount: accessoriesList.length,
                         itemBuilder: (BuildContext context, int index) {
                           final accessory = accessoriesList[index];
-                          final isPreSelected = _preSelectedAccessoryIds
-                              .contains(accessory.id);
+                          final accessoryId = accessory.id ?? "";
+                          final accessoryName = accessory.name ?? "";
+                          final isSelected =
+                              _accessorySelectionState[accessoryId] ?? false;
 
-                          return Consumer<SelectedAccessoriesProvider>(
-                            builder: (context, selectedProvider, _) {
-                              // Initialize selection state for pre-selected items
-                              if (_isInitialDataLoaded &&
-                                  isPreSelected &&
-                                  !selectedProvider.isSelected(
-                                    accessory.name ?? "",
-                                  )) {
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) {
-                                  selectedProvider.toggleAccessory(
-                                    accessory.name ?? "",
-                                  );
-                                });
-                              }
-
-                              return ContainerWithNameAndPrice(
-                                accessoryName: accessory.name ?? "",
-                                accessoryValue: accessory.price?.toInt() ?? 0,
-
-                                onSelectionChanged: () {
-                                  final selectedAccessoriesIds = <String>[];
-
-                                  for (var acc in accessoriesList) {
-                                    if (selectedProvider.isSelected(
-                                      acc.name ?? "",
-                                    )) {
-                                      if (acc.id != null) {
-                                        selectedAccessoriesIds.add(acc.id!);
-                                      }
-                                    }
-                                  }
-
-                                  bookingFormProvider.setAccessories(
-                                    selectedAccessoriesIds,
-                                  );
-                                },
+                          return EditContainerWithNameAndPrice(
+                            accessoryName: accessoryName,
+                            accessoryValue: accessory.price?.toInt() ?? 0,
+                            accessoryId: accessoryId,
+                            isSelected: isSelected,
+                            onSelectionChanged: () {
+                              _toggleAccessorySelection(
+                                accessoryId,
+                                accessoryName,
                               );
                             },
                           );

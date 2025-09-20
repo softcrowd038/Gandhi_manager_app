@@ -5,7 +5,7 @@ class ChassisAllocationModel {
   String? reason;
   final String chassisNumber;
   final bool hasClaim;
-  final String? hasDeviation;
+  final bool hasDeviation; // Changed from String? to bool
   final double? priceClaim;
   final String? description;
   final List<XFile> documents;
@@ -14,7 +14,7 @@ class ChassisAllocationModel {
     this.id,
     this.reason,
     required this.chassisNumber,
-    this.hasDeviation,
+    this.hasDeviation = false, // Default to false
     this.hasClaim = false,
     this.priceClaim,
     this.description,
@@ -26,7 +26,9 @@ class ChassisAllocationModel {
       'chassisNumber': chassisNumber,
       'reason': reason,
       'hasClaim': hasClaim.toString(),
-      'is_deviation': hasDeviation,
+      'is_deviation': hasDeviation
+          ? 'YES'
+          : 'NO', // Convert bool to YES/NO string
       if (priceClaim != null) 'priceClaim': priceClaim!.toString(),
       if (description != null && description!.isNotEmpty)
         'description': description,
@@ -48,7 +50,9 @@ class ChassisAllocationModel {
       'reason': reason,
       'chassisNumber': chassisNumber,
       'hasClaim': hasClaim,
-      'is_deviation': hasDeviation,
+      'is_deviation': hasDeviation
+          ? 'YES'
+          : 'NO', // Convert bool to YES/NO string
       'priceClaim': priceClaim,
       'description': description,
       'documents': documents.map((file) => file.path).toList(),
@@ -60,7 +64,7 @@ class ChassisAllocationModel {
     String? reason,
     String? chassisNumber,
     bool? hasClaim,
-    String? hasDeviation,
+    bool? hasDeviation, // Changed to bool
     double? priceClaim,
     String? description,
     List<XFile>? documents,
@@ -78,8 +82,7 @@ class ChassisAllocationModel {
   }
 
   bool validate() {
-    return chassisNumber.isNotEmpty &&
-        reason!.isNotEmpty; // Added reason validation
+    return chassisNumber.isNotEmpty && reason!.isNotEmpty;
   }
 
   List<String> getValidationErrors() {
@@ -90,7 +93,6 @@ class ChassisAllocationModel {
     }
 
     if (reason!.isEmpty) {
-      // Added reason validation
       errors.add('Reason is required');
     }
 

@@ -2,8 +2,8 @@
 
 import 'package:gandhi_tvs/common/app_imports.dart';
 
-QuotationResponse quotationResponseFromJson(String str) =>
-    QuotationResponse.fromJson(json.decode(str));
+QuotationResponse quotationResponseFromJson(String? str) =>
+    QuotationResponse.fromJson(json.decode(str ?? ""));
 
 String? quotationResponseToJson(QuotationResponse data) =>
     json.encode(data.toJson());
@@ -26,14 +26,15 @@ class QuotationResponse {
 class Data {
   UserDetails userDetails;
   CustomerDetails customerDetails;
-  DateTime expectedDeliveryDate;
+  DateTime? expectedDeliveryDate;
   List<AllModel> allModels;
   List<DataAttachment> attachments;
   String? quotationId;
   String? quotationNumber;
   String? pdfUrl;
+  String? pdfFullUrl;
   List<ModelSpecificOffer> modelSpecificOffers;
-  List<AllUniqueOffer> allUniqueOffers;
+  List<Offer> allUniqueOffers;
 
   Data({
     required this.userDetails,
@@ -44,6 +45,7 @@ class Data {
     required this.quotationId,
     required this.quotationNumber,
     required this.pdfUrl,
+    required this.pdfFullUrl,
     required this.modelSpecificOffers,
     required this.allUniqueOffers,
   });
@@ -51,7 +53,7 @@ class Data {
   factory Data.fromJson(Map<String?, dynamic>? json) => Data(
     userDetails: UserDetails.fromJson(json?["userDetails"]),
     customerDetails: CustomerDetails.fromJson(json?["customerDetails"]),
-    expectedDeliveryDate: DateTime.parse(json?["expected_delivery_date"]),
+    expectedDeliveryDate: DateTime?.parse(json?["expected_delivery_date"]),
     allModels: List<AllModel>.from(
       json?["AllModels"].map((x) => AllModel.fromJson(x)),
     ),
@@ -61,11 +63,12 @@ class Data {
     quotationId: json?["quotation_id"],
     quotationNumber: json?["quotation_number"],
     pdfUrl: json?["pdfUrl"],
+    pdfFullUrl: json?["pdfFullUrl"],
     modelSpecificOffers: List<ModelSpecificOffer>.from(
       json?["modelSpecificOffers"].map((x) => ModelSpecificOffer.fromJson(x)),
     ),
-    allUniqueOffers: List<AllUniqueOffer>.from(
-      json?["allUniqueOffers"].map((x) => AllUniqueOffer.fromJson(x)),
+    allUniqueOffers: List<Offer>.from(
+      json?["allUniqueOffers"].map((x) => Offer.fromJson(x)),
     ),
   );
 
@@ -73,12 +76,13 @@ class Data {
     "userDetails": userDetails.toJson(),
     "customerDetails": customerDetails.toJson(),
     "expected_delivery_date":
-        "${expectedDeliveryDate.year.toString().padLeft(4, '0')}-${expectedDeliveryDate.month.toString().padLeft(2, '0')}-${expectedDeliveryDate.day.toString().padLeft(2, '0')}",
+        "${expectedDeliveryDate?.year.toString().padLeft(4, '0')}-${expectedDeliveryDate?.month.toString().padLeft(2, '0')}-${expectedDeliveryDate?.day.toString().padLeft(2, '0')}",
     "AllModels": List<dynamic>.from(allModels.map((x) => x.toJson())),
     "attachments": List<dynamic>.from(attachments.map((x) => x.toJson())),
     "quotation_id": quotationId,
     "quotation_number": quotationNumber,
     "pdfUrl": pdfUrl,
+    "pdfFullUrl": pdfFullUrl,
     "modelSpecificOffers": List<dynamic>.from(
       modelSpecificOffers.map((x) => x.toJson()),
     ),
@@ -89,52 +93,44 @@ class Data {
 }
 
 class AllModel {
-  String? id;
   String? modelName;
   List<Price> prices;
-  int? exShowroomPrice;
+  int exShowroomPrice;
   String? series;
-  DateTime createdAt;
-  bool? isBaseModel;
+  bool isBaseModel;
 
   AllModel({
-    required this.id,
     required this.modelName,
     required this.prices,
     required this.exShowroomPrice,
     required this.series,
-    required this.createdAt,
     required this.isBaseModel,
   });
 
   factory AllModel.fromJson(Map<String?, dynamic>? json) => AllModel(
-    id: json?["_id"],
     modelName: json?["model_name"],
     prices: List<Price>.from(json?["prices"].map((x) => Price.fromJson(x))),
     exShowroomPrice: json?["ex_showroom_price"],
     series: json?["series"],
-    createdAt: DateTime.parse(json?["createdAt"]),
     isBaseModel: json?["is_base_model"],
   );
 
   Map<String?, dynamic>? toJson() => {
-    "_id": id,
     "model_name": modelName,
     "prices": List<dynamic>.from(prices.map((x) => x.toJson())),
     "ex_showroom_price": exShowroomPrice,
     "series": series,
-    "createdAt": createdAt.toIso8601String(),
     "is_base_model": isBaseModel,
   };
 }
 
 class Price {
-  int? value;
+  int value;
   String? headerKey;
-  CategoryKey? categoryKey;
-  int? priority;
+  CategoryKey categoryKey;
+  int priority;
   Metadata metadata;
-  Id? branchId;
+  Id branchId;
 
   Price({
     required this.value,
@@ -148,10 +144,10 @@ class Price {
   factory Price.fromJson(Map<String?, dynamic>? json) => Price(
     value: json?["value"],
     headerKey: json?["header_key"],
-    categoryKey: categoryKeyValues.map[json?["category_key"]],
+    categoryKey: categoryKeyValues.map[json?["category_key"]]!,
     priority: json?["priority"],
     metadata: Metadata.fromJson(json?["metadata"]),
-    branchId: idValues.map[json?["branch_id"]],
+    branchId: idValues.map[json?["branch_id"]]!,
   );
 
   Map<String?, dynamic>? toJson() => {
@@ -164,17 +160,18 @@ class Price {
   };
 }
 
-enum Id { THE_6821_E067_EB1_C809_E0_D7_EC96_E }
+enum Id { THE_68_C45_CFCB1965_F545_BCE5_F47 }
 
 final idValues = EnumValues({
-  "6821e067eb1c809e0d7ec96e": Id.THE_6821_E067_EB1_C809_E0_D7_EC96_E,
+  "68c45cfcb1965f545bce5f47": Id.THE_68_C45_CFCB1965_F545_BCE5_F47,
 });
 
-enum CategoryKey { ACCESORIES, ADD_O_NSERVICES, VEHICLE_PRICE }
+enum CategoryKey { ACCESORIES, ADD_O_NSERVICES, DELETED, VEHICLE_PRICE }
 
 final categoryKeyValues = EnumValues({
   "Accesories": CategoryKey.ACCESORIES,
   "AddONservices": CategoryKey.ADD_O_NSERVICES,
+  "deleted": CategoryKey.DELETED,
   "vehicle_price": CategoryKey.VEHICLE_PRICE,
 });
 
@@ -183,11 +180,7 @@ class Metadata {
   String? hsnCode;
   String? gstRate;
 
-  Metadata({
-    required this.pageNo,
-    required this.hsnCode,
-    required this.gstRate,
-  });
+  Metadata({this.pageNo, this.hsnCode, this.gstRate});
 
   factory Metadata.fromJson(Map<String?, dynamic>? json) => Metadata(
     pageNo: json?["page_no"],
@@ -202,40 +195,39 @@ class Metadata {
   };
 }
 
-class AllUniqueOffer {
+class Offer {
   String? id;
   String? title;
   String? description;
   String? image;
   String? url;
-  DateTime createdAt;
+  DateTime? createdAt;
   bool? applyToAllModels;
-  List<dynamic> applicableModels;
+  List<dynamic>? applicableModels;
 
-  AllUniqueOffer({
+  Offer({
     required this.id,
     required this.title,
     required this.description,
     required this.image,
     required this.url,
     required this.createdAt,
-    required this.applyToAllModels,
-    required this.applicableModels,
+    this.applyToAllModels,
+    this.applicableModels,
   });
 
-  factory AllUniqueOffer.fromJson(Map<String?, dynamic>? json) =>
-      AllUniqueOffer(
-        id: json?["_id"],
-        title: json?["title"],
-        description: json?["description"],
-        image: json?["image"],
-        url: json?["url"],
-        createdAt: DateTime.parse(json?["createdAt"]),
-        applyToAllModels: json?["applyToAllModels"],
-        applicableModels: List<dynamic>.from(
-          json?["applicableModels"].map((x) => x),
-        ),
-      );
+  factory Offer.fromJson(Map<String?, dynamic>? json) => Offer(
+    id: json?["_id"],
+    title: json?["title"],
+    description: json?["description"],
+    image: json?["image"],
+    url: json?["url"],
+    createdAt: DateTime.parse(json?["createdAt"]),
+    applyToAllModels: json?["applyToAllModels"],
+    applicableModels: json?["applicableModels"] == null
+        ? []
+        : List<dynamic>.from(json?["applicableModels"]!.map((x) => x)),
+  );
 
   Map<String?, dynamic>? toJson() => {
     "_id": id,
@@ -243,9 +235,11 @@ class AllUniqueOffer {
     "description": description,
     "image": image,
     "url": url,
-    "createdAt": createdAt.toIso8601String(),
+    "createdAt": createdAt?.toIso8601String(),
     "applyToAllModels": applyToAllModels,
-    "applicableModels": List<dynamic>.from(applicableModels.map((x) => x)),
+    "applicableModels": applicableModels == null
+        ? []
+        : List<dynamic>.from(applicableModels!.map((x) => x)),
   };
 }
 
@@ -253,11 +247,11 @@ class DataAttachment {
   String? id;
   String? title;
   String? description;
-  bool? isForAllModels;
+  bool isForAllModels;
   List<ApplicableModel> applicableModels;
   List<AttachmentAttachment> attachments;
   CreatedBy createdBy;
-  DateTime createdAt;
+  DateTime? createdAt;
 
   DataAttachment({
     required this.id,
@@ -296,7 +290,7 @@ class DataAttachment {
     ),
     "attachments": List<dynamic>.from(attachments.map((x) => x.toJson())),
     "createdBy": createdBy.toJson(),
-    "createdAt": createdAt.toIso8601String(),
+    "createdAt": createdAt?.toIso8601String(),
   };
 }
 
@@ -315,25 +309,39 @@ class ApplicableModel {
 class AttachmentAttachment {
   String? type;
   String? url;
+  String? thumbnail;
 
-  AttachmentAttachment({required this.type, required this.url});
+  AttachmentAttachment({
+    required this.type,
+    required this.url,
+    required this.thumbnail,
+  });
 
   factory AttachmentAttachment.fromJson(Map<String?, dynamic>? json) =>
-      AttachmentAttachment(type: json?["type"], url: json?["url"]);
+      AttachmentAttachment(
+        type: json?["type"],
+        url: json?["url"],
+        thumbnail: json?["thumbnail"],
+      );
 
-  Map<String?, dynamic>? toJson() => {"type": type, "url": url};
+  Map<String?, dynamic>? toJson() => {
+    "type": type,
+    "url": url,
+    "thumbnail": thumbnail,
+  };
 }
 
 class CreatedBy {
   String? id;
+  String? name;
   String? email;
 
-  CreatedBy({required this.id, required this.email});
+  CreatedBy({required this.id, required this.name, required this.email});
 
   factory CreatedBy.fromJson(Map<String?, dynamic>? json) =>
-      CreatedBy(id: json?["_id"], email: json?["email"]);
+      CreatedBy(id: json?["_id"], name: json?["name"], email: json?["email"]);
 
-  Map<String?, dynamic>? toJson() => {"_id": id, "email": email};
+  Map<String?, dynamic>? toJson() => {"_id": id, "name": name, "email": email};
 }
 
 class CustomerDetails {
@@ -344,8 +352,8 @@ class CustomerDetails {
   String? district;
   String? mobile1;
   String? mobile2;
-  bool? financeNeeded;
-  DateTime createdAt;
+  bool financeNeeded;
+  DateTime? createdAt;
 
   CustomerDetails({
     required this.id,
@@ -381,113 +389,62 @@ class CustomerDetails {
     "mobile1": mobile1,
     "mobile2": mobile2,
     "finance_needed": financeNeeded,
-    "createdAt": createdAt.toIso8601String(),
+    "createdAt": createdAt?.toIso8601String(),
   };
 }
 
 class ModelSpecificOffer {
-  String? modelId;
   String? modelName;
   List<Offer> offers;
 
-  ModelSpecificOffer({
-    required this.modelId,
-    required this.modelName,
-    required this.offers,
-  });
+  ModelSpecificOffer({required this.modelName, required this.offers});
 
   factory ModelSpecificOffer.fromJson(Map<String?, dynamic>? json) =>
       ModelSpecificOffer(
-        modelId: json?["model_id"],
         modelName: json?["model_name"],
         offers: List<Offer>.from(json?["offers"].map((x) => Offer.fromJson(x))),
       );
 
   Map<String?, dynamic>? toJson() => {
-    "model_id": modelId,
     "model_name": modelName,
     "offers": List<dynamic>.from(offers.map((x) => x.toJson())),
   };
 }
 
-class Offer {
-  String? id;
-  String? title;
-  String? description;
-  String? image;
-  String? url;
-  DateTime createdAt;
-
-  Offer({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.image,
-    required this.url,
-    required this.createdAt,
-  });
-
-  factory Offer.fromJson(Map<String?, dynamic>? json) => Offer(
-    id: json?["_id"],
-    title: json?["title"],
-    description: json?["description"],
-    image: json?["image"],
-    url: json?["url"],
-    createdAt: DateTime.parse(json?["createdAt"]),
-  );
-
-  Map<String?, dynamic>? toJson() => {
-    "_id": id,
-    "title": title,
-    "description": description,
-    "image": image,
-    "url": url,
-    "createdAt": createdAt.toIso8601String(),
-  };
-}
-
 class UserDetails {
   String? id;
-  String? username;
   String? email;
   String? mobile;
-  String? fullName;
   Branch branch;
   Role role;
 
   UserDetails({
     required this.id,
-    required this.username,
     required this.email,
     required this.mobile,
-    required this.fullName,
     required this.branch,
     required this.role,
   });
 
   factory UserDetails.fromJson(Map<String?, dynamic>? json) => UserDetails(
     id: json?["_id"],
-    username: json?["username"],
     email: json?["email"],
     mobile: json?["mobile"],
-    fullName: json?["full_name"],
     branch: Branch.fromJson(json?["branch"]),
     role: Role.fromJson(json?["role"]),
   );
 
   Map<String?, dynamic>? toJson() => {
     "_id": id,
-    "username": username,
     "email": email,
     "mobile": mobile,
-    "full_name": fullName,
     "branch": branch.toJson(),
     "role": role.toJson(),
   };
 }
 
 class Branch {
-  Id? id;
+  Id id;
   String? name;
   String? address;
   String? city;
@@ -496,7 +453,7 @@ class Branch {
   String? phone;
   String? email;
   String? gstNumber;
-  bool? isActive;
+  bool isActive;
 
   Branch({
     required this.id,
@@ -512,7 +469,7 @@ class Branch {
   });
 
   factory Branch.fromJson(Map<String?, dynamic>? json) => Branch(
-    id: idValues.map[json?["_id"]],
+    id: idValues.map[json?["_id"]]!,
     name: json?["name"],
     address: json?["address"],
     city: json?["city"],
@@ -540,23 +497,21 @@ class Branch {
 
 class Role {
   String? id;
-  String? name;
 
-  Role({required this.id, required this.name});
+  Role({required this.id});
 
-  factory Role.fromJson(Map<String?, dynamic>? json) =>
-      Role(id: json?["_id"], name: json?["name"]);
+  factory Role.fromJson(Map<String?, dynamic>? json) => Role(id: json?["_id"]);
 
-  Map<String?, dynamic>? toJson() => {"_id": id, "name": name};
+  Map<String?, dynamic>? toJson() => {"_id": id};
 }
 
 class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
+  Map<String?, T> map;
+  late Map<T, String?> reverseMap;
 
   EnumValues(this.map);
 
-  Map<T, String> get reverse {
+  Map<T, String?> get reverse {
     reverseMap = map.map((k, v) => MapEntry(v, k));
     return reverseMap;
   }

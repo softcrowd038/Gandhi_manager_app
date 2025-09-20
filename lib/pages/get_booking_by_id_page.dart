@@ -17,6 +17,7 @@ class GetBookingByIdPage extends HookWidget {
           context,
           listen: false,
         );
+        getBookingByIdProvider.reset();
         getBookingByIdProvider.fetchBookingsById(context, bookingId ?? "");
       });
       return null;
@@ -60,7 +61,7 @@ class GetBookingByIdPage extends HookWidget {
                                             bookingId: bookingProvider
                                                 .bookings
                                                 ?.data
-                                                ?.id,
+                                                .id,
                                           ),
                                     ),
                                   );
@@ -133,8 +134,8 @@ class GetBookingByIdPage extends HookWidget {
                         children: [
                           CustomerHeader(
                             customerName:
-                                "${booking.customerDetails?.salutation} ${booking.customerDetails?.name}",
-                            address: booking.model?.modelName ?? "",
+                                "${booking.customerDetails.salutation} ${booking.customerDetails.name}",
+                            address: booking.model.modelName ?? "",
                             bookingId: booking.bookingNumber ?? "",
                           ),
                           Divider(),
@@ -146,10 +147,10 @@ class GetBookingByIdPage extends HookWidget {
                                 status1: booking.kycStatus,
                                 value: 'KYC',
                               ),
-                              booking.payment?.type == 'FINANCE'
+                              booking.payment.type == 'FINANCE'
                                   ? SizedBox(height: AppDimensions.height1)
                                   : SizedBox.shrink(),
-                              booking.payment?.type == 'FINANCE'
+                              booking.payment.type == 'FINANCE'
                                   ? StatusChangingContainer(
                                       label: booking.financeLetterStatus,
                                       status1: booking.financeLetterStatus,
@@ -179,7 +180,7 @@ class GetBookingByIdPage extends HookWidget {
                                 children: [
                                   LableWithIcon(
                                     lable:
-                                        "${booking.customerDetails?.address}, ${booking.customerDetails?.taluka}, ${booking.customerDetails?.district}, ${booking.customerDetails?.pincode}",
+                                        "${booking.customerDetails.address}, ${booking.customerDetails.taluka}, ${booking.customerDetails.district}, ${booking.customerDetails.pincode}",
                                     colors: AppColors.error,
                                     textColors: AppColors.textPrimary,
                                     size: AppDimensions.height3,
@@ -192,7 +193,7 @@ class GetBookingByIdPage extends HookWidget {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       LableWithIcon(
-                                        lable: booking.customerDetails?.mobile1,
+                                        lable: booking.customerDetails.mobile1,
                                         colors: AppColors.secondary,
                                         textColors: AppColors.textPrimary,
                                         size: AppDimensions.height3,
@@ -201,7 +202,7 @@ class GetBookingByIdPage extends HookWidget {
                                       ),
                                       LableWithIcon(
                                         lable:
-                                            booking.customerDetails?.occupation,
+                                            booking.customerDetails.occupation,
                                         colors: AppColors.textSecondary,
                                         textColors: AppColors.textPrimary,
                                         size: AppDimensions.height3,
@@ -211,7 +212,8 @@ class GetBookingByIdPage extends HookWidget {
                                     ],
                                   ),
                                   LableWithIcon(
-                                    lable: booking.customerDetails?.dob,
+                                    lable: booking.customerDetails.dob
+                                        ?.toIso8601String(),
                                     colors: AppColors.textSecondary,
                                     textColors: AppColors.textPrimary,
                                     size: AppDimensions.height3,
@@ -230,11 +232,11 @@ class GetBookingByIdPage extends HookWidget {
                                         ),
                                       ),
                                       Text(
-                                        booking.customerDetails?.aadharNumber !=
+                                        booking.customerDetails.aadharNumber !=
                                                 ""
                                             ? booking
                                                       .customerDetails
-                                                      ?.aadharNumber ??
+                                                      .aadharNumber ??
                                                   ""
                                             : 'N/A',
                                         style: TextStyle(
@@ -254,9 +256,9 @@ class GetBookingByIdPage extends HookWidget {
                                         ),
                                       ),
                                       Text(
-                                        booking.customerDetails?.aadharNumber !=
+                                        booking.customerDetails.aadharNumber !=
                                                 ""
-                                            ? booking.customerDetails?.panNo ??
+                                            ? booking.customerDetails.panNo ??
                                                   'N/A'
                                             : 'N/A',
                                         style: TextStyle(
@@ -266,9 +268,9 @@ class GetBookingByIdPage extends HookWidget {
                                     ],
                                   ),
                                   SizedBox(height: AppDimensions.height1),
-                                  booking.customerDetails?.nomineeName != null
+                                  booking.customerDetails.nomineeName != null
                                       ? Text(
-                                          "${booking.customerDetails?.nomineeName?.toUpperCase()} is my ${booking.customerDetails?.nomineeRelation} of age ${booking.customerDetails?.nomineeAge} is my nominee",
+                                          "${booking.customerDetails.nomineeName?.toUpperCase()} is my ${booking.customerDetails.nomineeRelation} of age ${booking.customerDetails.nomineeAge} is my nominee",
                                           style: TextStyle(
                                             fontWeight: AppFontWeight.w500,
                                           ),
@@ -291,7 +293,7 @@ class GetBookingByIdPage extends HookWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   LableWithIcon(
-                                    lable: "${booking.model?.modelName}",
+                                    lable: "${booking.model.modelName}",
                                     colors: AppColors.primary,
                                     textColors: AppColors.textPrimary,
                                     size: AppDimensions.height3,
@@ -303,17 +305,17 @@ class GetBookingByIdPage extends HookWidget {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       LableWithIcon(
-                                        lable: booking.model?.type,
+                                        lable: booking.model.type,
                                         colors: AppColors.secondary,
                                         textColors: AppColors.textPrimary,
                                         size: AppDimensions.height3,
-                                        circle: booking.model?.type == "EV"
+                                        circle: booking.model.type == "EV"
                                             ? Icons.electric_bike
                                             : Icons.motorcycle_outlined,
                                         fontWeight: AppFontWeight.w500,
                                       ),
                                       LableWithIcon(
-                                        lable: booking.color?.name,
+                                        lable: booking.color.name,
                                         colors: AppColors.textSecondary,
                                         textColors: AppColors.textPrimary,
                                         size: AppDimensions.height3,
@@ -526,21 +528,20 @@ class GetBookingByIdPage extends HookWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   LableWithIcon(
-                                    lable: "${booking.payment?.type}",
-                                    colors: booking.payment?.type == "CASH"
+                                    lable: "${booking.payment.type}",
+                                    colors: booking.payment.type == "CASH"
                                         ? AppColors.success
                                         : AppColors.secondary,
                                     textColors: AppColors.textPrimary,
                                     size: AppDimensions.height3,
-                                    circle: booking.payment?.type == "CASH"
+                                    circle: booking.payment.type == "CASH"
                                         ? Icons.currency_rupee
                                         : Icons.credit_card,
                                     fontWeight: AppFontWeight.w500,
                                   ),
-                                  booking.payment?.type != "CASH"
+                                  booking.payment.type != "CASH"
                                       ? LableWithIcon(
-                                          lable:
-                                              booking.payment?.financer?.name,
+                                          lable: booking.payment.financer?.name,
                                           colors: AppColors.secondary,
                                           textColors: AppColors.textPrimary,
                                           size: AppDimensions.height3,
@@ -548,9 +549,9 @@ class GetBookingByIdPage extends HookWidget {
                                           fontWeight: AppFontWeight.w500,
                                         )
                                       : SizedBox.shrink(),
-                                  booking.payment?.type != "CASH"
+                                  booking.payment.type != "CASH"
                                       ? LableWithIcon(
-                                          lable: booking.payment?.scheme,
+                                          lable: booking.payment.scheme,
                                           colors: AppColors.textSecondary,
                                           textColors: AppColors.textPrimary,
                                           size: AppDimensions.height3,
@@ -559,7 +560,7 @@ class GetBookingByIdPage extends HookWidget {
                                         )
                                       : SizedBox.shrink(),
                                   SizedBox(height: AppDimensions.height1),
-                                  booking.payment?.type != "CASH"
+                                  booking.payment.type != "CASH"
                                       ? Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -571,7 +572,7 @@ class GetBookingByIdPage extends HookWidget {
                                               ),
                                             ),
                                             Text(
-                                              booking.payment?.scheme ?? 'N/A',
+                                              booking.payment.scheme ?? 'N/A',
                                               style: TextStyle(
                                                 fontWeight: AppFontWeight.bold,
                                               ),
@@ -579,7 +580,7 @@ class GetBookingByIdPage extends HookWidget {
                                           ],
                                         )
                                       : SizedBox.shrink(),
-                                  booking.payment?.type != "CASH"
+                                  booking.payment.type != "CASH"
                                       ? Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -591,7 +592,7 @@ class GetBookingByIdPage extends HookWidget {
                                               ),
                                             ),
                                             Text(
-                                              booking.payment?.emiPlan ?? 'N/A',
+                                              booking.payment.emiPlan ?? 'N/A',
                                               style: TextStyle(
                                                 fontWeight: AppFontWeight.bold,
                                               ),
@@ -599,7 +600,7 @@ class GetBookingByIdPage extends HookWidget {
                                           ],
                                         )
                                       : SizedBox.shrink(),
-                                  booking.payment?.type != "CASH"
+                                  booking.payment.type != "CASH"
                                       ? Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -611,7 +612,7 @@ class GetBookingByIdPage extends HookWidget {
                                               ),
                                             ),
                                             Text(
-                                              booking.payment?.gcApplicable ??
+                                              booking.payment.gcApplicable ??
                                                       false
                                                   ? "Yes"
                                                   : 'No',
@@ -622,7 +623,7 @@ class GetBookingByIdPage extends HookWidget {
                                           ],
                                         )
                                       : SizedBox.shrink(),
-                                  booking.payment?.type != "CASH"
+                                  booking.payment.type != "CASH"
                                       ? Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -634,7 +635,7 @@ class GetBookingByIdPage extends HookWidget {
                                               ),
                                             ),
                                             Text(
-                                              "${booking.payment?.gcAmount.toString()} ₹",
+                                              "${booking.payment.gcAmount.toString()} ₹",
                                               style: TextStyle(
                                                 fontWeight: AppFontWeight.bold,
                                               ),
@@ -678,8 +679,8 @@ class GetBookingByIdPage extends HookWidget {
                                         LableWithIcon(
                                           lable: booking
                                               .exchangeDetails
-                                              ?.broker
-                                              ?.name,
+                                              .broker
+                                              .name,
                                           colors: AppColors.secondary,
                                           textColors: AppColors.textPrimary,
                                           size: AppDimensions.height3,
@@ -698,9 +699,8 @@ class GetBookingByIdPage extends HookWidget {
                                               ),
                                             ),
                                             Text(
-                                              booking.exchangeDetails?.price
-                                                      .toString() ??
-                                                  'N/A',
+                                              booking.exchangeDetails.price
+                                                  .toString(),
                                               style: TextStyle(
                                                 fontWeight: AppFontWeight.bold,
                                               ),
@@ -720,7 +720,7 @@ class GetBookingByIdPage extends HookWidget {
                                             Text(
                                               booking
                                                       .exchangeDetails
-                                                      ?.vehicleNumber ??
+                                                      .vehicleNumber ??
                                                   'N/A',
                                               style: TextStyle(
                                                 fontWeight: AppFontWeight.bold,
@@ -741,7 +741,7 @@ class GetBookingByIdPage extends HookWidget {
                                             Text(
                                               booking
                                                       .exchangeDetails
-                                                      ?.chassisNumber ??
+                                                      .chassisNumber ??
                                                   "",
                                               style: TextStyle(
                                                 fontWeight: AppFontWeight.bold,
@@ -833,7 +833,7 @@ class GetBookingByIdPage extends HookWidget {
                                               booking
                                                       .priceComponents[index]
                                                       .header
-                                                      ?.headerKey ??
+                                                      .headerKey ??
                                                   "",
                                             ),
                                             trailing: Text(

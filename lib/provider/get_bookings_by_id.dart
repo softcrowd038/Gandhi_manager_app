@@ -28,4 +28,11 @@ class GetBookingsByIdProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  void reset() {
+    _bookings = null;
+    _isLoading = false;
+    _errorMessage = null;
+    notifyListeners();
+  }
 }

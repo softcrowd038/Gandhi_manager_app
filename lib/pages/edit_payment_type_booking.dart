@@ -61,7 +61,7 @@ class _PaymentTypeBookingState extends State<EditPaymentTypeBooking> {
       );
 
       if (getBookingByIdProvider.bookings?.data != null) {
-        final bookingData = getBookingByIdProvider.bookings!.data!;
+        final bookingData = getBookingByIdProvider.bookings!.data;
         final bookingFormProvider = Provider.of<BookingFormProvider>(
           context,
           listen: false,
@@ -69,34 +69,32 @@ class _PaymentTypeBookingState extends State<EditPaymentTypeBooking> {
 
         // Populate payment details fields
         setState(() {
-          selectedPaymentType = bookingData.payment?.type;
-          paymentTypeController.text = bookingData.payment?.type ?? "FINANCE";
-          selectedFinancer = bookingData.payment?.financer?.id;
-          selectedGCApplicable = bookingData.payment?.gcApplicable == true
+          selectedPaymentType = bookingData.payment.type;
+          paymentTypeController.text = bookingData.payment.type ?? "FINANCE";
+          selectedFinancer = bookingData.payment.financer?.id;
+          selectedGCApplicable = bookingData.payment.gcApplicable == true
               ? "Yes"
               : "No";
         });
 
         // Set controller values
         paymentTypeController.text = selectedPaymentType ?? '';
-        financerController.text = bookingData.payment?.financer?.name ?? '';
-        financeSchemeController.text = bookingData.payment?.scheme ?? '';
-        emiSchemeController.text = bookingData.payment?.emiPlan ?? '';
+        financerController.text = bookingData.payment.financer?.name ?? '';
+        financeSchemeController.text = bookingData.payment.scheme ?? '';
+        emiSchemeController.text = bookingData.payment.emiPlan ?? '';
         gcAmountController.text =
-            bookingData.payment?.gcAmount?.toString() ?? '';
+            bookingData.payment.gcAmount?.toString() ?? '';
         gcApplicableController.text = selectedGCApplicable ?? '';
 
         // Update provider with fetched data
-        bookingFormProvider.setPaymentType(bookingData.payment?.type ?? "");
-        bookingFormProvider.setFinancer(
-          bookingData.payment?.financer?.id ?? "",
-        );
-        bookingFormProvider.setScheme(bookingData.payment?.scheme ?? "");
-        bookingFormProvider.setEmiDetails(bookingData.payment?.emiPlan ?? "");
+        bookingFormProvider.setPaymentType(bookingData.payment.type ?? "");
+        bookingFormProvider.setFinancer(bookingData.payment.financer?.id ?? "");
+        bookingFormProvider.setScheme(bookingData.payment.scheme ?? "");
+        bookingFormProvider.setEmiDetails(bookingData.payment.emiPlan ?? "");
         bookingFormProvider.setGcApplicable(
-          bookingData.payment?.gcApplicable ?? false,
+          bookingData.payment.gcApplicable ?? false,
         );
-        bookingFormProvider.setGcAmount(bookingData.payment?.gcAmount ?? 0);
+        bookingFormProvider.setGcAmount(bookingData.payment.gcAmount ?? 0);
 
         setState(() {});
       }
@@ -257,9 +255,9 @@ class _PaymentTypeBookingState extends State<EditPaymentTypeBooking> {
                           bookingFormProvider.setScheme(value);
                         },
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter finance scheme';
-                          }
+                          // if (value == null || value.isEmpty) {
+                          //   return 'Please enter finance scheme';
+                          // }
                           return null;
                         },
                         obscureText: false,
@@ -275,9 +273,9 @@ class _PaymentTypeBookingState extends State<EditPaymentTypeBooking> {
                         obscureText: false,
                         controller: emiSchemeController,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter EMI scheme';
-                          }
+                          // if (value == null || value.isEmpty) {
+                          //   return 'Please enter EMI scheme';
+                          // }
                           return null;
                         },
                         onChanged: (value) {
@@ -311,7 +309,9 @@ class _PaymentTypeBookingState extends State<EditPaymentTypeBooking> {
                           },
                         ),
                       ),
-                      if (selectedGCApplicable == "Yes")
+                      if (selectedGCApplicable == "Yes" &&
+                          bookingFormProvider.bookingFormModel.paymentType ==
+                              "FINANCE")
                         CustomTextFieldOutlined(
                           label: "GC Applicable Amount",
                           hintText: "0",

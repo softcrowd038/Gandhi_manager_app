@@ -14,7 +14,7 @@ class DelivaryChallanPdf {
   ) async {
     final pdf = pw.Document();
     final bookingData = data?.data;
-
+    print(data);
     if (bookingData == null) {
       throw Exception("No booking data available");
     }
@@ -111,7 +111,7 @@ class DelivaryChallanPdf {
                       pw.Text('Name'),
                       pw.Text(":"),
                       pw.Text(
-                        bookingData.customerDetails?.name ?? "",
+                        bookingData.customerDetails.name ?? "",
                         style: pw.TextStyle(
                           fontWeight: pw.FontWeight.bold,
                           color: PdfColors.grey600,
@@ -126,7 +126,7 @@ class DelivaryChallanPdf {
                       pw.Text('Address'),
                       pw.Text(":"),
                       pw.Text(
-                        bookingData.customerDetails?.address ?? "",
+                        bookingData.customerDetails.address ?? "",
                         style: pw.TextStyle(
                           fontWeight: pw.FontWeight.bold,
                           color: PdfColors.grey600,
@@ -141,7 +141,7 @@ class DelivaryChallanPdf {
                       pw.Text("S.E Name"),
                       pw.Text(":"),
                       pw.Text(
-                        bookingData.salesExecutive?.name ?? 'N/A',
+                        bookingData.salesExecutive.name ?? 'N/A',
                         style: pw.TextStyle(
                           fontWeight: pw.FontWeight.bold,
                           color: PdfColors.grey600,
@@ -156,8 +156,8 @@ class DelivaryChallanPdf {
                       pw.Text("Model"),
                       pw.Text(":"),
                       pw.Text(
-                        bookingData.model?.modelName ??
-                            bookingData.model?.name ??
+                        bookingData.model.modelName ??
+                            bookingData.model.name ??
                             'N/A',
                         style: pw.TextStyle(
                           fontWeight: pw.FontWeight.bold,
@@ -166,7 +166,7 @@ class DelivaryChallanPdf {
                       ),
                       pw.Text("Colour :"),
                       pw.Text(
-                        bookingData.color?.name ?? 'N/A',
+                        bookingData.color.name ?? 'N/A',
                         style: pw.TextStyle(
                           fontWeight: pw.FontWeight.bold,
                           color: PdfColors.grey600,
@@ -176,7 +176,7 @@ class DelivaryChallanPdf {
                   ),
                   _buildTableRow(
                     cells: [
-                      pw.Text("Chasis No"),
+                      pw.Text("Chassis No"),
                       pw.Text(":"),
                       pw.Text(
                         bookingData.chassisNumber ?? '',
@@ -215,7 +215,7 @@ class DelivaryChallanPdf {
                       pw.Text("Financer"),
                       pw.Text(":"),
                       pw.Text(
-                        bookingData.payment?.financer?.name ?? '',
+                        bookingData.payment.financer?.name ?? '',
                         style: pw.TextStyle(
                           fontWeight: pw.FontWeight.bold,
                           color: PdfColors.grey600,
@@ -230,20 +230,20 @@ class DelivaryChallanPdf {
                       pw.Text("Total"),
                       pw.Text(":"),
                       pw.Text(
-                        "Rs.${totalAmount.toStringAsFixed(0)}",
-                        style: pw.TextStyle(
-                          fontWeight: pw.FontWeight.bold,
-                          color: PdfColors.grey600,
-                        ),
-                      ),
-                      pw.Text("Grand Total :"),
-                      pw.Text(
                         "Rs.${discountedAmount.toStringAsFixed(0)}",
                         style: pw.TextStyle(
                           fontWeight: pw.FontWeight.bold,
                           color: PdfColors.grey600,
                         ),
                       ),
+                      // pw.Text("Grand Total :"),
+                      // pw.Text(
+                      //   "Rs.${discountedAmount.toStringAsFixed(0)}",
+                      //   style: pw.TextStyle(
+                      //     fontWeight: pw.FontWeight.bold,
+                      //     color: PdfColors.grey600,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
@@ -404,7 +404,7 @@ class DelivaryChallanPdf {
                         ),
                         pw.Text(":"),
                         pw.Text(
-                          bookingData.customerDetails?.name ?? "",
+                          bookingData.customerDetails.name ?? "",
                           style: pw.TextStyle(
                             fontWeight: pw.FontWeight.bold,
                             color: PdfColors.grey600,
@@ -423,7 +423,7 @@ class DelivaryChallanPdf {
                         ),
                         pw.Text(":"),
                         pw.Text(
-                          bookingData.customerDetails?.address ?? "",
+                          bookingData.customerDetails.address ?? "",
                           style: pw.TextStyle(
                             fontWeight: pw.FontWeight.bold,
                             color: PdfColors.grey600,
@@ -438,7 +438,7 @@ class DelivaryChallanPdf {
                         pw.Text("S.E Name"),
                         pw.Text(":"),
                         pw.Text(
-                          bookingData.salesExecutive?.name ?? 'N/A',
+                          bookingData.salesExecutive.name ?? 'N/A',
                           style: pw.TextStyle(
                             fontWeight: pw.FontWeight.bold,
                             color: PdfColors.grey600,
@@ -453,8 +453,8 @@ class DelivaryChallanPdf {
                         pw.Text("Model"),
                         pw.Text(":"),
                         pw.Text(
-                          bookingData.model?.modelName ??
-                              bookingData.model?.name ??
+                          bookingData.model.modelName ??
+                              bookingData.model.name ??
                               'N/A',
                           style: pw.TextStyle(
                             fontWeight: pw.FontWeight.bold,
@@ -463,7 +463,7 @@ class DelivaryChallanPdf {
                         ),
                         pw.Text("Colour :"),
                         pw.Text(
-                          bookingData.color?.name ?? 'N/A',
+                          bookingData.color.name ?? 'N/A',
                           style: pw.TextStyle(
                             fontWeight: pw.FontWeight.bold,
                             color: PdfColors.grey600,
@@ -473,7 +473,7 @@ class DelivaryChallanPdf {
                     ),
                     _buildTableRow(
                       cells: [
-                        pw.Text("Chasis No"),
+                        pw.Text("Chassis No"),
                         pw.Text(":"),
                         pw.Text(
                           bookingData.chassisNumber ?? '',
@@ -512,7 +512,7 @@ class DelivaryChallanPdf {
                         pw.Text("Financer"),
                         pw.Text(":"),
                         pw.Text(
-                          bookingData.payment?.financer?.name ?? '',
+                          bookingData.payment.financer?.name ?? '',
                           style: pw.TextStyle(
                             fontWeight: pw.FontWeight.bold,
                             color: PdfColors.grey600,
@@ -731,9 +731,9 @@ class DelivaryChallanPdf {
 
               // Declaration text
               pw.Text(
-                "मी..${bookingData.customerDetails?.name ?? 'N/A'}, असे घोषित करतो कि\n\n"
+                "मी..${bookingData.customerDetails.name ?? 'N/A'}, असे घोषित करतो कि\n\n"
                 "दि. $formattedDate रोजी गांधी मोटार टि व्हि यस नासिक\n"
-                "या वितरकाकडून टि व्हि यस..${bookingData.model?.modelName ?? bookingData.model?.name ?? 'N/A'}, हे वाहन खरेदी केले आहे.\n"
+                "या वितरकाकडून टि व्हि यस..${bookingData.model.modelName ?? bookingData.model.name ?? 'N/A'}, हे वाहन खरेदी केले आहे.\n"
                 "त्याचा तपशील खालील प्रमाणे...",
                 textAlign: pw.TextAlign.justify,
               ),
@@ -771,7 +771,7 @@ class DelivaryChallanPdf {
                     children: [
                       pw.Text("दुचाकी खरेदिदाराची स्वाक्षरी"),
                       pw.Text(
-                        "नाव :- ${bookingData.customerDetails?.name ?? 'N/A'}",
+                        "नाव :- ${bookingData.customerDetails.name ?? 'N/A'}",
                       ),
                     ],
                   ),
