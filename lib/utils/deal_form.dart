@@ -14,7 +14,6 @@ class DealFormPdf {
   ) async {
     final pdf = pw.Document();
     final bookingData = data?.data;
-    print(data);
     if (bookingData == null) {
       throw Exception("No booking data available");
     }

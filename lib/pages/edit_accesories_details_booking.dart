@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_null_comparison, use_build_context_synchronously
+// ignore_for_file: unnecessary_null_comparison, use_build_context_synchronously, unused_field
 
 import 'package:gandhi_tvs/common/app_imports.dart' hide Price;
 import 'package:gandhi_tvs/widgets/edit_container_with_name_and_price.dart';
@@ -21,7 +21,7 @@ class _EditAccessoriesDetailsBookingState
   bool _isInitialDataLoaded = false;
   List<String> _preSelectedAccessoryIds = [];
   List<String> _selectedAccessoryIds = [];
-  Map<String, bool> _accessorySelectionState = {};
+  final Map<String, bool> _accessorySelectionState = {};
 
   @override
   void initState() {

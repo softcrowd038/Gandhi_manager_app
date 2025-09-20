@@ -42,9 +42,6 @@ class OtpVerificationService {
         final userId = responseData['user']?['id']?.toString();
         final branch = responseData['user']?['branch']['_id']?.toString();
 
-        print(branch);
-        print(token);
-
         if (token != null) {
           prefs.setString('token', token);
         }

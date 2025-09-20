@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:gandhi_tvs/common/app_imports.dart';
 
 AllQuotationModel allQuotationModelFromJson(String? str) =>

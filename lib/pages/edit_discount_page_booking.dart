@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unused_local_variable
 
 import 'package:gandhi_tvs/common/app_imports.dart';
 import 'package:provider/provider.dart';
@@ -254,9 +254,6 @@ class _EditDiscountPageBookingState extends State<EditDiscountPageBooking> {
                     minimum: AppPadding.p2,
                     child: GestureDetector(
                       onTap: () {
-                        print(
-                          bookingFormProvider.bookingFormModel.accessoryIds,
-                        );
                         final bookingFormModel = BookingFormModel(
                           customerAadharNumber: bookingFormProvider
                               .bookingFormModel

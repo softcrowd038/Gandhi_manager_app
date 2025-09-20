@@ -14,22 +14,18 @@ class DelivaryChallanPdf {
   ) async {
     final pdf = pw.Document();
     final bookingData = data?.data;
-    print(data);
     if (bookingData == null) {
       throw Exception("No booking data available");
     }
 
-    // Load TVS logo
     final ByteData logoData = await rootBundle.load('assets/images/logo.png');
     final Uint8List logoBytes = logoData.buffer.asUint8List();
     final tvsLogo = pw.MemoryImage(logoBytes);
 
-    // Calculate total amount
     final totalAmount = bookingData.totalAmount?.toDouble() ?? 0.0;
     final discountedAmount =
         bookingData.discountedAmount?.toDouble() ?? totalAmount;
 
-    // Get current date
     final currentDate = DateTime.now();
     final formattedDate =
         "${currentDate.day.toString().padLeft(2, '0')}/${currentDate.month.toString().padLeft(2, '0')}/${currentDate.year}";

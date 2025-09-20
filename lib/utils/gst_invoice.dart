@@ -11,7 +11,6 @@ class GstInvoice {
   ) async {
     final pdf = pw.Document();
     final bookingData = data?.data;
-    print(data);
     if (bookingData == null) {
       throw Exception("No booking data available");
     }
@@ -88,7 +87,6 @@ class GstInvoice {
     final rtoCharges = rtoComponent.originalValue?.toDouble() ?? 0.0;
     final hpCharges = bookingData.hypothecationCharges?.toDouble() ?? 0.0;
     final addonServices = addonTotal.originalValue?.toDouble() ?? 0.0;
-    final totalC = insuranceCharges + rtoCharges + hpCharges - addonServices;
     final totalB = insuranceCharges + rtoCharges + hpCharges;
     final totalA =
         (bookingData.discountedAmount?.toDouble() ?? 0.0) -

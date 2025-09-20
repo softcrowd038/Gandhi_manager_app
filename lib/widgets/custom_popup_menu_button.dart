@@ -25,7 +25,6 @@ class _CustomPopUpMenuButtonState extends State<CustomPopUpMenuButton> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print(widget.booking.id);
       final getBookingByIdProvider = Provider.of<GetBookingsByIdProvider>(
         context,
         listen: false,

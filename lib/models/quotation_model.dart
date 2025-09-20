@@ -53,7 +53,7 @@ class Data {
   factory Data.fromJson(Map<String?, dynamic>? json) => Data(
     userDetails: UserDetails.fromJson(json?["userDetails"]),
     customerDetails: CustomerDetails.fromJson(json?["customerDetails"]),
-    expectedDeliveryDate: DateTime?.parse(json?["expected_delivery_date"]),
+    expectedDeliveryDate: DateTime.parse(json?["expected_delivery_date"]),
     allModels: List<AllModel>.from(
       json?["AllModels"].map((x) => AllModel.fromJson(x)),
     ),
